@@ -1,42 +1,56 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+>
 
 <title>Диагност кофемашины</title>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
+
 *{
   box-sizing:border-box;
   -webkit-tap-highlight-color:transparent;
 }
 
-body{
+html,body{
   margin:0;
+  padding:0;
+  width:100%;
+  min-height:100%;
+}
+
+body{
   background:#3C2F2F;
-  color:#fff;
+  color:#ffffff;
   font-family:Arial,sans-serif;
 }
 
 .app{
+  width:100%;
   max-width:600px;
-  margin:auto;
-  padding:20px 16px 35px;
+  margin:0 auto;
+  padding:20px 16px 40px;
 }
 
 .logo{
   text-align:center;
   font-size:42px;
-  margin:8px 0;
+  margin:5px 0 8px;
 }
 
 h1{
   text-align:center;
   font-size:25px;
-  margin:5px 0 8px;
+  margin:0 0 8px;
 }
 
 .subtitle{
@@ -44,29 +58,29 @@ h1{
   color:#d8caca;
   font-size:15px;
   line-height:1.4;
-  margin-bottom:25px;
+  margin-bottom:24px;
 }
 
 .progress{
+  width:100%;
   height:6px;
   background:#624f4f;
   border-radius:10px;
   overflow:hidden;
-  margin-bottom:25px;
+  margin-bottom:22px;
 }
 
-.progress div{
+#progressBar{
   height:100%;
   width:14%;
   background:#FF5722;
-  transition:.3s;
+  transition:width .2s;
 }
 
 .card{
   background:#493838;
   border-radius:18px;
   padding:20px;
-  box-shadow:0 5px 20px rgba(0,0,0,.2);
 }
 
 .step{
@@ -80,27 +94,29 @@ h1{
 .question{
   font-size:21px;
   font-weight:bold;
+  line-height:1.3;
   margin-bottom:18px;
 }
 
 .option{
   display:block;
   width:100%;
-  background:#5a4545;
   border:2px solid transparent;
   border-radius:13px;
+  background:#5a4545;
+  color:#ffffff;
   padding:15px;
   margin:10px 0;
   font-size:16px;
   line-height:1.3;
+  text-align:left;
   cursor:pointer;
   user-select:none;
-  touch-action:manipulation;
 }
 
 .option.selected{
-  border-color:#FF5722;
   background:#654343;
+  border-color:#FF5722;
 }
 
 .btn{
@@ -108,14 +124,13 @@ h1{
   width:100%;
   border:0;
   border-radius:13px;
+  background:#FF5722;
+  color:#ffffff;
   padding:16px;
   margin-top:18px;
-  background:#FF5722;
-  color:#fff;
   font-size:17px;
   font-weight:bold;
   cursor:pointer;
-  touch-action:manipulation;
 }
 
 .btn:disabled{
@@ -124,11 +139,12 @@ h1{
 
 input,
 textarea{
+  display:block;
   width:100%;
-  background:#382b2b;
-  color:#fff;
   border:1px solid #705858;
   border-radius:12px;
+  background:#382b2b;
+  color:#ffffff;
   padding:14px;
   font-size:16px;
   outline:none;
@@ -145,14 +161,13 @@ textarea{
   border-radius:10px;
   padding:15px;
   line-height:1.5;
-  margin-top:15px;
 }
 
 .small{
   color:#cdbebe;
   font-size:13px;
-  margin-top:10px;
   line-height:1.4;
+  margin-top:10px;
 }
 
 .success{
@@ -162,10 +177,12 @@ textarea{
 
 .success-icon{
   font-size:55px;
-  margin-bottom:10px;
 }
+
 </style>
+
 </head>
+
 
 <body>
 
@@ -181,12 +198,14 @@ textarea{
 </div>
 
 <div class="progress">
-<div id="progress"></div>
+<div id="progressBar"></div>
 </div>
+
 
 <div class="card">
 
-<!-- ШАГ 1 -->
+
+<!-- ==================== ШАГ 1 ==================== -->
 
 <div class="step active" id="step1">
 
@@ -194,46 +213,59 @@ textarea{
 Что происходит с кофемашиной?
 </div>
 
-<div class="option" onclick="selectOption('symptom','Не включается',this)">
+<div class="option"
+onclick="selectSymptom(this,'Не включается')">
 🔌 Не включается
 </div>
 
-<div class="option" onclick="selectOption('symptom','Течёт',this)">
+<div class="option"
+onclick="selectSymptom(this,'Течёт')">
 💧 Течёт
 </div>
 
-<div class="option" onclick="selectOption('symptom','Не делает кофе',this)">
+<div class="option"
+onclick="selectSymptom(this,'Не делает кофе')">
 ☕ Не делает кофе
 </div>
 
-<div class="option" onclick="selectOption('symptom','Не мелет',this)">
+<div class="option"
+onclick="selectSymptom(this,'Не мелет')">
 ⚙️ Не мелет
 </div>
 
-<div class="option" onclick="selectOption('symptom','Не нагревает',this)">
+<div class="option"
+onclick="selectSymptom(this,'Не нагревает')">
 🔥 Не нагревает
 </div>
 
-<div class="option" onclick="selectOption('symptom','Ошибка на дисплее',this)">
+<div class="option"
+onclick="selectSymptom(this,'Ошибка на дисплее')">
 ⚠️ Ошибка на дисплее
 </div>
 
-<div class="option" onclick="selectOption('symptom','🥛 Не делает молочную пену',this)">
+<div class="option"
+onclick="selectSymptom(this,'🥛 Не делает молочную пену')">
 🥛 Не делает молочную пену
 </div>
 
-<div class="option" onclick="selectOption('symptom','Другая проблема',this)">
+<div class="option"
+onclick="selectSymptom(this,'Другая проблема')">
 ❓ Другая проблема
 </div>
 
-<button class="btn" id="next1" onclick="goStep2()" disabled>
+<button
+class="btn"
+id="button1"
+onclick="goToStep2()"
+disabled
+>
 Далее
 </button>
 
 </div>
 
 
-<!-- ШАГ 2 -->
+<!-- ==================== ШАГ 2 ==================== -->
 
 <div class="step" id="step2">
 
@@ -241,16 +273,69 @@ textarea{
 Какая марка кофемашины?
 </div>
 
-<div id="brands"></div>
+<div class="option"
+onclick="selectBrand(this,'Jura')">
+Jura
+</div>
 
-<button class="btn" id="next2" onclick="goStep3()" disabled>
+<div class="option"
+onclick="selectBrand(this,'DeLonghi')">
+DeLonghi
+</div>
+
+<div class="option"
+onclick="selectBrand(this,'BORK')">
+BORK
+</div>
+
+<div class="option"
+onclick="selectBrand(this,'Saeco')">
+Saeco
+</div>
+
+<div class="option"
+onclick="selectBrand(this,'Philips')">
+Philips
+</div>
+
+<div class="option"
+onclick="selectBrand(this,'WMF')">
+WMF
+</div>
+
+<div class="option"
+onclick="selectBrand(this,'Bosch / Siemens')">
+Bosch / Siemens
+</div>
+
+<div class="option"
+onclick="selectBrand(this,'Melitta')">
+Melitta
+</div>
+
+<div class="option"
+onclick="selectBrand(this,'Krups')">
+Krups
+</div>
+
+<div class="option"
+onclick="selectBrand(this,'Другая')">
+Другая
+</div>
+
+<button
+class="btn"
+id="button2"
+onclick="goToStep3()"
+disabled
+>
 Далее
 </button>
 
 </div>
 
 
-<!-- ШАГ 3 -->
+<!-- ==================== ШАГ 3 ==================== -->
 
 <div class="step" id="step3">
 
@@ -264,14 +349,17 @@ type="text"
 placeholder="Например: Jura E8"
 >
 
-<button class="btn" onclick="goStep4()">
+<button
+class="btn"
+onclick="goToStep4()"
+>
 Далее
 </button>
 
 </div>
 
 
-<!-- ШАГ 4 -->
+<!-- ==================== ШАГ 4 ==================== -->
 
 <div class="step" id="step4">
 
@@ -279,16 +367,59 @@ placeholder="Например: Jura E8"
 Когда возникает проблема?
 </div>
 
-<div id="timings"></div>
+<div class="option"
+onclick="selectTiming(this,'Сразу после включения')">
+Сразу после включения
+</div>
 
-<button class="btn" id="next4" onclick="goStep5()" disabled>
+<div class="option"
+onclick="selectTiming(this,'При приготовлении кофе')">
+При приготовлении кофе
+</div>
+
+<div class="option"
+onclick="selectTiming(this,'При помоле')">
+При помоле
+</div>
+
+<div class="option"
+onclick="selectTiming(this,'При нагреве')">
+При нагреве
+</div>
+
+<div class="option"
+onclick="selectTiming(this,'При приготовлении молочного напитка')">
+При приготовлении молочного напитка
+</div>
+
+<div class="option"
+onclick="selectTiming(this,'После приготовления')">
+После приготовления
+</div>
+
+<div class="option"
+onclick="selectTiming(this,'Периодически / иногда')">
+Периодически / иногда
+</div>
+
+<div class="option"
+onclick="selectTiming(this,'После чистки или декальцинации')">
+После чистки или декальцинации
+</div>
+
+<button
+class="btn"
+id="button4"
+onclick="goToStep5()"
+disabled
+>
 Далее
 </button>
 
 </div>
 
 
-<!-- ШАГ 5 -->
+<!-- ==================== ШАГ 5 ==================== -->
 
 <div class="step" id="step5">
 
@@ -296,16 +427,23 @@ placeholder="Например: Jura E8"
 Уточним симптомы
 </div>
 
-<div id="details"></div>
+<div id="detailOptions"></div>
 
-<button class="btn" id="next5" onclick="goStep6()" disabled>
+<div id="errorBlock"></div>
+
+<button
+class="btn"
+id="button5"
+onclick="goToStep6()"
+disabled
+>
 Далее
 </button>
 
 </div>
 
 
-<!-- ШАГ 6 -->
+<!-- ==================== ШАГ 6 ==================== -->
 
 <div class="step" id="step6">
 
@@ -318,14 +456,17 @@ id="tried"
 placeholder="Например: чистил кофемашину, промывал систему, перезапускал..."
 ></textarea>
 
-<button class="btn" onclick="finish()">
+<button
+class="btn"
+onclick="finishDiagnosis()"
+>
 Получить предварительную диагностику
 </button>
 
 </div>
 
 
-<!-- ШАГ 7 -->
+<!-- ==================== ШАГ 7 ==================== -->
 
 <div class="step" id="step7">
 
@@ -333,9 +474,16 @@ placeholder="Например: чистил кофемашину, промыва
 Предварительная диагностика
 </div>
 
-<div id="diagnosis" class="result"></div>
+<div
+class="result"
+id="diagnosis"
+></div>
 
-<button class="btn" onclick="sendRequest()" id="sendBtn">
+<button
+class="btn"
+id="sendButton"
+onclick="sendRequest()"
+>
 📩 Отправить заявку Егору
 </button>
 
@@ -346,15 +494,19 @@ placeholder="Например: чистил кофемашину, промыва
 </div>
 
 
-<!-- УСПЕХ -->
+<!-- ==================== УСПЕХ ==================== -->
 
 <div class="step" id="success">
 
 <div class="success">
 
-<div class="success-icon">✅</div>
+<div class="success-icon">
+✅
+</div>
 
-<h2>Заявка отправлена</h2>
+<h2>
+Заявка отправлена
+</h2>
 
 <p>
 Егор получил информацию о вашей кофемашине
@@ -365,286 +517,147 @@ placeholder="Например: чистил кофемашину, промыва
 
 </div>
 
+
 </div>
+
 </div>
 
 
 <script>
 
-const tg =
-window.Telegram && window.Telegram.WebApp;
+/* =====================================
+TELEGRAM
+===================================== */
 
-if(tg){
+var tg = null;
+
+if(window.Telegram && window.Telegram.WebApp){
+
+tg = window.Telegram.WebApp;
+
 tg.ready();
+
 tg.expand();
+
 }
 
 
-/* =========================
-ДАННЫЕ
-========================= */
+/* =====================================
+BACKEND
+===================================== */
 
-const A = {
+var API_URL =
+'https://script.google.com/macros/s/AKfycbxJTKB6roMw4eeWYOYjJC2rLWOeNE2ahy3JUqNU53ZjZpVkzJD9iEo-bqTzP6xFjLa1/exec';
+
+
+/* =====================================
+ДАННЫЕ
+===================================== */
+
+var answer = {
+
 symptom:'',
 brand:'',
 model:'',
 timing:'',
 detail:'',
-tried:'',
-error:''
+error:'',
+tried:''
+
 };
 
 
-/* =========================
-АДРЕС BACKEND
-========================= */
+/* =====================================
+ВЫБОР СИМПТОМА
+===================================== */
 
-const API_URL =
-'https://script.google.com/macros/s/AKfycbxJTKB6roMw4eeWYOYjJC2rLWOeNE2ahy3JUqNU53ZjZpVkzJD9iEo-bqTzP6xFjLa1/exec';
+function selectSymptom(element,value){
 
+answer.symptom = value;
 
-/* =========================
-ВЫБОР
-========================= */
+var parent = element.parentNode;
 
-function selectOption(key,value,element){
+var options = parent.getElementsByClassName('option');
 
-A[key]=value;
+for(var i=0;i<options.length;i++){
 
-const parent=element.parentElement;
+options[i].classList.remove('selected');
 
-const options=parent.querySelectorAll('.option');
-
-options.forEach(function(item){
-item.classList.remove('selected');
-});
+}
 
 element.classList.add('selected');
 
-
-if(key==='symptom'){
-document.getElementById('next1').disabled=false;
-}
-
-if(key==='brand'){
-document.getElementById('next2').disabled=false;
-}
-
-if(key==='timing'){
-document.getElementById('next4').disabled=false;
-}
-
-if(key==='detail'){
-document.getElementById('next5').disabled=false;
-}
+document.getElementById('button1').disabled = false;
 
 }
 
 
-/* =========================
-ШАГ
-========================= */
+/* =====================================
+ВЫБОР МАРКИ
+===================================== */
 
-function showStep(number){
+function selectBrand(element,value){
 
-const steps=document.querySelectorAll('.step');
+answer.brand = value;
 
-steps.forEach(function(step){
-step.classList.remove('active');
-});
+var parent = element.parentNode;
 
-const target=document.getElementById('step'+number);
+var options = parent.getElementsByClassName('option');
 
-if(target){
-target.classList.add('active');
-}
+for(var i=0;i<options.length;i++){
 
-updateProgress(number);
-
-window.scrollTo(0,0);
+options[i].classList.remove('selected');
 
 }
 
+element.classList.add('selected');
 
-/* =========================
-ШАГ 1 → 2
-========================= */
-
-function goStep2(){
-
-if(!A.symptom){
-alert('Сначала выберите проблему');
-return;
-}
-
-showStep(2);
+document.getElementById('button2').disabled = false;
 
 }
 
 
-/* =========================
-МАРКИ
-========================= */
+/* =====================================
+ВЫБОР ВРЕМЕНИ
+===================================== */
 
-const brands=[
-'Jura',
-'DeLonghi',
-'BORK',
-'Saeco',
-'Philips',
-'WMF',
-'Bosch / Siemens',
-'Melitta',
-'Krups',
-'Другая'
-];
+function selectTiming(element,value){
 
+answer.timing = value;
 
-document.getElementById('brands').innerHTML=
+var parent = element.parentNode;
 
-brands.map(function(x){
+var options = parent.getElementsByClassName('option');
 
-return `
-<div
-class="option"
-onclick="selectOption('brand','${x}',this)"
->
-${x}
-</div>
-`;
+for(var i=0;i<options.length;i++){
 
-}).join('');
+options[i].classList.remove('selected');
 
-
-/* =========================
-ШАГ 2 → 3
-========================= */
-
-function goStep3(){
-
-if(!A.brand){
-alert('Сначала выберите марку');
-return;
 }
 
-showStep(3);
+element.classList.add('selected');
+
+document.getElementById('button4').disabled = false;
 
 }
 
 
-/* =========================
-ШАГ 3 → 4
-========================= */
+/* =====================================
+ВЫБОР УТОЧНЕНИЯ
+===================================== */
 
-function goStep4(){
+function selectDetail(element,value){
 
-A.model=
-document.getElementById('model').value.trim();
+answer.detail = value;
 
-if(!A.model){
-alert('Введите модель кофемашины');
-return;
-}
+var parent = element.parentNode;
 
-showStep(4);
+var options = parent.getElementsByClassName('option');
 
-}
+for(var i=0;i<options.length;i++){
 
-
-/* =========================
-КОГДА ВОЗНИКАЕТ
-========================= */
-
-const timings=[
-
-'Сразу после включения',
-'При приготовлении кофе',
-'При помоле',
-'При нагреве',
-'При приготовлении молочного напитка',
-'После приготовления',
-'Периодически / иногда',
-'После чистки или декальцинации'
-
-];
-
-
-document.getElementById('timings').innerHTML=
-
-timings.map(function(x){
-
-return `
-<div
-class="option"
-onclick="selectOption('timing','${x}',this)"
->
-${x}
-</div>
-`;
-
-}).join('');
-
-
-/* =========================
-ШАГ 4 → 5
-========================= */
-
-function goStep5(){
-
-if(!A.timing){
-alert('Сначала выберите вариант');
-return;
-}
-
-buildDetail();
-
-showStep(5);
+options[i].classList.remove('selected');
 
 }
 
-
-/* =========================
-УТОЧНЕНИЯ
-========================= */
-
-function buildDetail(){
-
-const box=document.getElementById('details');
-
-const title=document.getElementById('detailTitle');
-
-let arr=[];
-
-
-if(A.symptom==='🥛 Не делает молочную пену'){
-
-title.textContent=
-'🥛 Что происходит с молочной системой?';
-
-arr=[
-
-'Молоко вообще не засасывает',
-'Идёт молоко, но без пены',
-'Пена получается слишком жидкой',
-'Пена стала хуже постепенно',
-'То делает пену, то нет',
-'Из молочной системы почти ничего не выходит',
-'Другая проблема'
-
-];
-
-}
-
-else if(A.symptom==='Ошибка на дисплее'){
-
-title.textContent=
-'⚠️ Как проявляется ошибка?';
-
-arr=[
-
-'Ошибка появляется сразу после включения',
-'Ошибка появляется при приготовлении кофе',
-'Ошибка появляется при помоле',
-'Ошибка появляется при нагреве',
-'Ошибка появляется при приготовлении молочного напитка',
-'Ошибка появляется после
+element.classList.add('selected');
