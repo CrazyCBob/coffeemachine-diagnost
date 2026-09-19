@@ -2,71 +2,125 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+>
+
 <title>Диагностика кофемашин</title>
 
 <style>
-*{box-sizing:border-box}
 
-body{
-  margin:0;
-  background:#3C2F2F;
-  color:#fff;
-  font-family:Arial,sans-serif;
-  min-height:100vh;
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
 }
 
-.app{
-  max-width:520px;
-  margin:auto;
-  padding:22px 16px 35px;
+html,
+body{
+  margin:0;
+  padding:0;
+  min-height:100%;
+}
+
+body{
+  background:#3C2F2F;
+  color:#ffffff;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Arial,
+    sans-serif;
+}
+
+#app{
+  width:100%;
+  max-width:560px;
+  margin:0 auto;
+  padding:20px 16px 35px;
+}
+
+.header{
+  text-align:center;
+  margin-bottom:22px;
 }
 
 .logo{
-  text-align:center;
-  font-size:28px;
-  font-weight:700;
-  margin:8px 0 6px;
+  font-size:27px;
+  font-weight:800;
+  line-height:1.15;
 }
 
 .subtitle{
-  text-align:center;
-  color:#cfc7c5;
-  font-size:15px;
+  margin-top:7px;
+  color:#cfc5c2;
+  font-size:14px;
+  line-height:1.4;
+}
+
+.progress{
+  width:100%;
+  height:5px;
+  background:#554646;
+  border-radius:10px;
+  overflow:hidden;
   margin-bottom:25px;
 }
 
-.step{
-  display:none;
+.progress-bar{
+  height:100%;
+  width:14%;
+  background:#FF5722;
+  border-radius:10px;
+  transition:width .25s ease;
 }
 
-.step.active{
-  display:block;
+h1,
+h2{
+  margin:0;
 }
 
 h2{
-  font-size:24px;
+  font-size:25px;
   line-height:1.2;
-  margin:10px 0 18px;
+  margin-bottom:20px;
 }
 
-p{
-  color:#d8d0ce;
-  line-height:1.45;
+.screen{
+  width:100%;
 }
 
 .option{
+  display:block;
   width:100%;
-  padding:17px 16px;
+  min-height:54px;
   margin:9px 0;
-  border:2px solid #665554;
-  border-radius:13px;
+  padding:15px 16px;
+
+  border:2px solid #665654;
+  border-radius:14px;
+
   background:#493938;
-  color:#fff;
-  font-size:17px;
+  color:#ffffff;
+
+  font-size:16px;
+  line-height:1.25;
   text-align:left;
+
   cursor:pointer;
-  transition:.15s;
+  appearance:none;
+  -webkit-appearance:none;
+
+  transition:
+    background .12s ease,
+    border-color .12s ease,
+    transform .08s ease;
+}
+
+.option:active{
+  transform:scale(.985);
 }
 
 .option.selected{
@@ -74,162 +128,1475 @@ p{
   border-color:#FF5722;
 }
 
-.option:active{
-  transform:scale(.98);
-}
-
-input,textarea{
+.next{
+  display:block;
   width:100%;
-  background:#493938;
-  color:#fff;
-  border:2px solid #665554;
-  border-radius:13px;
-  padding:16px;
-  font-size:17px;
-  outline:none;
-  margin-bottom:12px;
-}
+  min-height:56px;
 
-input:focus,textarea:focus{
-  border-color:#FF5722;
-}
+  margin-top:18px;
 
-textarea{
-  min-height:130px;
-  resize:vertical;
-}
-
-.btn{
-  width:100%;
-  padding:17px;
   border:0;
-  border-radius:13px;
-  background:#666;
+  border-radius:14px;
+
+  background:#625654;
   color:#aaa;
-  font-size:18px;
+
+  font-size:17px;
   font-weight:700;
-  margin-top:12px;
+
+  cursor:pointer;
+  appearance:none;
+  -webkit-appearance:none;
 }
 
-.btn.ready{
+.next.ready{
   background:#FF5722;
-  color:#fff;
-  cursor:pointer;
+  color:#ffffff;
 }
 
 .back{
-  background:transparent;
-  color:#aaa;
+  display:block;
+  width:100%;
+
+  margin-top:13px;
+  padding:13px 0;
+
   border:0;
+  background:transparent;
+
+  color:#aaa;
   font-size:16px;
-  padding:12px 0;
+
+  cursor:pointer;
 }
 
-.progress{
-  height:5px;
-  background:#554544;
-  border-radius:10px;
-  margin:0 0 25px;
-  overflow:hidden;
+input,
+textarea{
+  display:block;
+  width:100%;
+
+  border:2px solid #665654;
+  border-radius:14px;
+
+  background:#493938;
+  color:#ffffff;
+
+  padding:16px;
+
+  font-family:inherit;
+  font-size:17px;
+
+  outline:none;
+
+  appearance:none;
+  -webkit-appearance:none;
 }
 
-.progress div{
-  height:100%;
-  width:14%;
-  background:#FF5722;
-  transition:.2s;
+input{
+  min-height:56px;
+}
+
+textarea{
+  min-height:150px;
+  resize:vertical;
+  line-height:1.45;
+}
+
+input:focus,
+textarea:focus{
+  border-color:#FF5722;
 }
 
 .review{
   background:#493938;
+  border:1px solid #665654;
   border-radius:15px;
   padding:18px;
-  line-height:1.55;
+
   white-space:pre-line;
+  word-break:break-word;
+
+  font-size:16px;
+  line-height:1.55;
 }
 
 .success{
   text-align:center;
-  padding-top:35px;
+  padding:45px 10px 20px;
 }
 
 .success-icon{
   font-size:64px;
-  margin-bottom:15px;
+  margin-bottom:18px;
 }
 
-.small{
-  font-size:13px;
-  color:#aaa;
-  text-align:center;
-  margin-top:20px;
+.success p{
+  color:#d5ccca;
+  font-size:16px;
+  line-height:1.5;
 }
+
+.error-message{
+  display:none;
+
+  margin-top:14px;
+  padding:13px;
+
+  border-radius:12px;
+
+  background:#5a302b;
+  color:#ffd5cf;
+
+  font-size:14px;
+  line-height:1.4;
+}
+
+.footer{
+  margin-top:28px;
+
+  text-align:center;
+
+  color:#928785;
+  font-size:12px;
+  line-height:1.4;
+}
+
+.hidden{
+  display:none !important;
+}
+
 </style>
 </head>
 
 <body>
 
-<div class="app">
+<div id="app">
 
-<div class="logo">🔧 Диагностика кофемашины</div>
-<div class="subtitle">Поможем определить вероятную причину неисправности</div>
+  <div class="header">
+    <div class="logo">🔧 Диагностика кофемашины</div>
 
-<div class="progress"><div id="progress"></div></div>
+    <div class="subtitle">
+      Поможем собрать симптомы и подготовить заявку на диагностику
+    </div>
+  </div>
 
-<!-- 1 -->
-<div class="step active" id="step1">
-<h2>Что происходит с кофемашиной?</h2>
+  <div class="progress">
+    <div
+      id="progressBar"
+      class="progress-bar"
+    ></div>
+  </div>
 
-<button class="option" onclick="selectSymptom(this,'Не включается')">🔌 Не включается</button>
-<button class="option" onclick="selectSymptom(this,'Не делает кофе')">☕ Не делает кофе</button>
-<button class="option" onclick="selectSymptom(this,'Не мелет кофе')">⚙️ Не мелет кофе</button>
-<button class="option" onclick="selectSymptom(this,'Кофе течёт не туда')">💧 Кофе течёт не туда</button>
-<button class="option" onclick="selectSymptom(this,'Не нагревает воду')">🔥 Не нагревает воду</button>
-<button class="option" onclick="selectSymptom(this,'Не делает молочную пену')">🥛 Не делает молочную пену</button>
-<button class="option" onclick="selectSymptom(this,'Течёт вода')">💦 Течёт вода</button>
-<button class="option" onclick="selectSymptom(this,'Появляется ошибка')">⚠️ Появляется ошибка</button>
-<button class="option" onclick="selectSymptom(this,'Другая проблема')">🔍 Другая проблема</button>
+  <div
+    id="screen"
+    class="screen"
+  ></div>
 
-<button class="btn" id="next1" onclick="goStep2()">Далее</button>
+  <div class="footer">
+    Предварительная диагностика не заменяет проверку кофемашины мастером.
+  </div>
+
 </div>
 
-<!-- 2 -->
-<div class="step" id="step2">
-<h2>Марка кофемашины</h2>
 
-<button class="option" onclick="selectBrand(this,'Jura')">Jura</button>
-<button class="option" onclick="selectBrand(this,'BORK')">BORK</button>
-<button class="option" onclick="selectBrand(this,'DeLonghi')">DeLonghi</button>
-<button class="option" onclick="selectBrand(this,'Saeco')">Saeco</button>
-<button class="option" onclick="selectBrand(this,'Philips')">Philips</button>
-<button class="option" onclick="selectBrand(this,'Bosch')">Bosch</button>
-<button class="option" onclick="selectBrand(this,'Siemens')">Siemens</button>
-<button class="option" onclick="selectBrand(this,'WMF')">WMF</button>
-<button class="option" onclick="selectBrand(this,'Другая')">Другая марка</button>
+<script>
 
-<button class="back" onclick="showStep(1)">← Назад</button>
-<button class="btn" id="next2" onclick="goStep3()">Далее</button>
-</div>
+"use strict";
 
-<!-- 3 -->
-<div class="step" id="step3">
-<h2>Какая модель?</h2>
 
-<input id="model" placeholder="Например: Jura E8">
+/*
+====================================================
+ НАСТРОЙКИ
+====================================================
+*/
 
-<button class="back" onclick="showStep(2)">← Назад</button>
-<button class="btn" onclick="goStep4()">Далее</button>
-</div>
+const BACKEND_URL =
+"https://script.google.com/macros/s/AKfycbxJTKB6roMw4eeWYOYjJC2rLWOeNE2ahy3JUqNU53ZjZpVkzJD9iEo-bqTzP6xFjLa1/exec";
 
-<!-- 4 -->
-<div class="step" id="step4">
-<h2>Когда возникает проблема?</h2>
 
-<button class="option" onclick="selectTiming(this,'Сразу после включения')">Сразу после включения</button>
-<button class="option" onclick="selectTiming(this,'При приготовлении кофе')">При приготовлении кофе</button>
-<button class="option" onclick="selectTiming(this,'При помоле')">При помоле</button>
-<button class="option" onclick="selectTiming(this,'При нагреве')">При нагреве</button>
-<button class="option" onclick="selectTiming(this,'При приготовлении молочного напитка')">При приготовлении молочного напитка</button>
-<button class="option" onclick="selectTiming(this,'После приготовления')">После приготовления</button>
-<button class="option" onclick="selectTiming(this,'Периодически')">Периодически</button>
-<button class="option" onclick="selectTiming(this,'Постоянно
+/*
+====================================================
+ ДАННЫЕ ДИАГНОСТИКИ
+====================================================
+*/
+
+const symptoms = [
+
+  "Не включается",
+
+  "Не делает кофе",
+
+  "Не мелет кофе",
+
+  "Кофе течёт не туда",
+
+  "Не нагревает воду",
+
+  "Не делает молочную пену",
+
+  "Течёт вода",
+
+  "Появляется ошибка",
+
+  "Другая проблема"
+
+];
+
+
+const brands = [
+
+  "Jura",
+
+  "BORK",
+
+  "DeLonghi",
+
+  "Saeco",
+
+  "Philips",
+
+  "Bosch",
+
+  "Siemens",
+
+  "WMF",
+
+  "Другой бренд"
+
+];
+
+
+const timings = [
+
+  "Сразу после включения",
+
+  "При приготовлении кофе",
+
+  "При помоле",
+
+  "При нагреве",
+
+  "При приготовлении молочного напитка",
+
+  "После приготовления",
+
+  "Периодически",
+
+  "Постоянно",
+
+  "Не знаю"
+
+];
+
+
+const milkDetails = [
+
+  "Молоко вообще не засасывает",
+
+  "Идёт молоко, но без пены",
+
+  "Пена получается слишком жидкой",
+
+  "Пена стала хуже постепенно",
+
+  "То делает пену, то нет",
+
+  "Из молочной системы почти ничего не выходит",
+
+  "Другая проблема"
+
+];
+
+
+const errorDetails = [
+
+  "Ошибка появляется сразу после включения",
+
+  "Ошибка появляется при приготовлении кофе",
+
+  "Ошибка появляется при помоле",
+
+  "Ошибка появляется при нагреве",
+
+  "Ошибка появляется при приготовлении молочного напитка",
+
+  "Ошибка появляется после приготовления",
+
+  "Ошибка появляется периодически",
+
+  "Ошибка появляется постоянно",
+
+  "Другое"
+
+];
+
+
+const generalDetails = [
+
+  "Вода уходит в поддон",
+
+  "Кофе получается слабым",
+
+  "Кофе идёт тонкой струёй",
+
+  "Посторонний шум",
+
+  "Другая проблема"
+
+];
+
+
+/*
+====================================================
+ СОСТОЯНИЕ
+====================================================
+*/
+
+const state = {
+
+  step:1,
+
+  symptom:"",
+
+  brand:"",
+
+  model:"",
+
+  timing:"",
+
+  detail:"",
+
+  error:"",
+
+  tried:""
+
+};
+
+
+/*
+====================================================
+ TELEGRAM
+====================================================
+*/
+
+function initTelegram(){
+
+  try{
+
+    if(
+      window.Telegram &&
+      window.Telegram.WebApp
+    ){
+
+      window.Telegram.WebApp.ready();
+
+      if(
+        typeof window.Telegram.WebApp.expand === "function"
+      ){
+
+        window.Telegram.WebApp.expand();
+
+      }
+
+    }
+
+  }catch(error){
+
+    console.log(
+      "Telegram WebApp:",
+      error
+    );
+
+  }
+
+}
+
+
+/*
+====================================================
+ ЭКРАН
+====================================================
+*/
+
+function setProgress(step){
+
+  let percent;
+
+  if(step >= 8){
+
+    percent = 100;
+
+  }else{
+
+    percent = Math.round(
+      (step / 7) * 100
+    );
+
+  }
+
+  document
+    .getElementById("progressBar")
+    .style.width = percent + "%";
+
+}
+
+
+function showStep(step){
+
+  state.step = step;
+
+  setProgress(step);
+
+  const screen =
+    document.getElementById("screen");
+
+  if(!screen){
+
+    return;
+
+  }
+
+
+  if(step === 1){
+
+    renderStep1(screen);
+
+  }
+
+  else if(step === 2){
+
+    renderStep2(screen);
+
+  }
+
+  else if(step === 3){
+
+    renderStep3(screen);
+
+  }
+
+  else if(step === 4){
+
+    renderStep4(screen);
+
+  }
+
+  else if(step === 5){
+
+    renderStep5(screen);
+
+  }
+
+  else if(step === 6){
+
+    renderStep6(screen);
+
+  }
+
+  else if(step === 7){
+
+    renderStep7(screen);
+
+  }
+
+  else{
+
+    renderSuccess(screen);
+
+  }
+
+
+  window.scrollTo(0,0);
+
+}
+
+
+/*
+====================================================
+ БЕЗОПАСНЫЙ HTML-ТЕКСТ
+====================================================
+*/
+
+function escapeHtml(value){
+
+  return String(value)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+
+/*
+====================================================
+ КНОПКИ ВАРИАНТОВ
+====================================================
+*/
+
+function createOptions(
+  items,
+  field
+){
+
+  return items.map(function(item){
+
+    const selected =
+      state[field] === item
+        ? " selected"
+        : "";
+
+    return (
+
+      '<button' +
+
+      ' type="button"' +
+
+      ' class="option' +
+      selected +
+      '"' +
+
+      ' data-field="' +
+      escapeHtml(field) +
+      '"' +
+
+      ' data-value="' +
+      escapeHtml(item) +
+      '"' +
+
+      '>' +
+
+      escapeHtml(item) +
+
+      '</button>'
+
+    );
+
+  }).join("");
+
+}
+
+
+/*
+====================================================
+ ПРИВЯЗКА КНОПОК
+====================================================
+*/
+
+function bindOptions(){
+
+  const options =
+    document.querySelectorAll(".option");
+
+
+  options.forEach(function(button){
+
+    button.addEventListener(
+      "click",
+      function(){
+
+        const field =
+          button.getAttribute("data-field");
+
+        const value =
+          button.getAttribute("data-value");
+
+
+        state[field] = value;
+
+
+        options.forEach(function(item){
+
+          item.classList.remove("selected");
+
+        });
+
+
+        button.classList.add("selected");
+
+
+        const next =
+          document.getElementById("nextButton");
+
+        if(next){
+
+          next.classList.add("ready");
+
+        }
+
+      }
+    );
+
+  });
+
+}
+
+
+/*
+====================================================
+ КНОПКА НАЗАД
+====================================================
+*/
+
+function createBackButton(step){
+
+  return (
+
+    '<button' +
+
+    ' type="button"' +
+
+    ' class="back"' +
+
+    ' data-back-step="' +
+    step +
+    '"' +
+
+    '>← Назад</button>'
+
+  );
+
+}
+
+
+function bindBack(){
+
+  const buttons =
+    document.querySelectorAll(
+      "[data-back-step]"
+    );
+
+
+  buttons.forEach(function(button){
+
+    button.addEventListener(
+      "click",
+      function(){
+
+        const step =
+          Number(
+            button.getAttribute(
+              "data-back-step"
+            )
+          );
+
+        showStep(step);
+
+      }
+    );
+
+  });
+
+}
+
+
+/*
+====================================================
+ ШАГ 1
+====================================================
+*/
+
+function renderStep1(screen){
+
+  screen.innerHTML =
+
+    '<h2>Что происходит с кофемашиной?</h2>' +
+
+    createOptions(
+      symptoms,
+      "symptom"
+    ) +
+
+    '<button' +
+    ' type="button"' +
+    ' id="nextButton"' +
+    ' class="next' +
+    (
+      state.symptom
+        ? " ready"
+        : ""
+    ) +
+    '"' +
+    '>Далее</button>';
+
+
+  bindOptions();
+
+  bindNext(function(){
+
+    if(!state.symptom){
+
+      showError(
+        "Сначала выберите симптом."
+      );
+
+      return;
+
+    }
+
+
+    showStep(2);
+
+  });
+
+}
+
+
+/*
+====================================================
+ ШАГ 2
+====================================================
+*/
+
+function renderStep2(screen){
+
+  screen.innerHTML =
+
+    '<h2>Марка кофемашины</h2>' +
+
+    createOptions(
+      brands,
+      "brand"
+    ) +
+
+    createBackButton(1) +
+
+    '<button' +
+    ' type="button"' +
+    ' id="nextButton"' +
+    ' class="next' +
+    (
+      state.brand
+        ? " ready"
+        : ""
+    ) +
+    '"' +
+    '>Далее</button>';
+
+
+  bindOptions();
+
+  bindBack();
+
+  bindNext(function(){
+
+    if(!state.brand){
+
+      showError(
+        "Выберите марку кофемашины."
+      );
+
+      return;
+
+    }
+
+
+    showStep(3);
+
+  });
+
+}
+
+
+/*
+====================================================
+ ШАГ 3
+====================================================
+*/
+
+function renderStep3(screen){
+
+  screen.innerHTML =
+
+    '<h2>Какая модель?</h2>' +
+
+    '<input' +
+    ' id="modelInput"' +
+    ' type="text"' +
+    ' autocomplete="off"' +
+    ' autocapitalize="sentences"' +
+    ' placeholder="Например: Jura E8"' +
+    ' value="' +
+    escapeHtml(state.model) +
+    '"' +
+    '>' +
+
+    '<div' +
+    ' id="errorMessage"' +
+    ' class="error-message"' +
+    '></div>' +
+
+    createBackButton(2) +
+
+    '<button' +
+    ' type="button"' +
+    ' id="nextButton"' +
+    ' class="next ready"' +
+    '>Далее</button>';
+
+
+  bindBack();
+
+  bindNext(function(){
+
+    const input =
+      document.getElementById(
+        "modelInput"
+      );
+
+
+    state.model =
+      input
+        ? input.value.trim()
+        : "";
+
+
+    if(!state.model){
+
+      showError(
+        "Введите модель кофемашины."
+      );
+
+      return;
+
+    }
+
+
+    showStep(4);
+
+  });
+
+}
+
+
+/*
+====================================================
+ ШАГ 4
+====================================================
+*/
+
+function renderStep4(screen){
+
+  screen.innerHTML =
+
+    '<h2>Когда возникает проблема?</h2>' +
+
+    createOptions(
+      timings,
+      "timing"
+    ) +
+
+    createBackButton(3) +
+
+    '<button' +
+    ' type="button"' +
+    ' id="nextButton"' +
+    ' class="next' +
+    (
+      state.timing
+        ? " ready"
+        : ""
+    ) +
+    '"' +
+    '>Далее</button>';
+
+
+  bindOptions();
+
+  bindBack();
+
+  bindNext(function(){
+
+    if(!state.timing){
+
+      showError(
+        "Выберите, когда возникает проблема."
+      );
+
+      return;
+
+    }
+
+
+    showStep(5);
+
+  });
+
+}
+
+
+/*
+====================================================
+ ШАГ 5
+====================================================
+*/
+
+function renderStep5(screen){
+
+  let items;
+
+
+  if(
+    state.symptom ===
+    "Не делает молочную пену"
+  ){
+
+    items = milkDetails;
+
+  }
+
+  else if(
+    state.symptom ===
+    "Появляется ошибка"
+  ){
+
+    items = errorDetails;
+
+  }
+
+  else{
+
+    items = generalDetails;
+
+  }
+
+
+  let errorInput = "";
+
+
+  if(
+    state.symptom ===
+    "Появляется ошибка"
+  ){
+
+    errorInput =
+
+      '<input' +
+      ' id="errorInput"' +
+      ' type="text"' +
+      ' autocomplete="off"' +
+      ' autocapitalize="characters"' +
+      ' placeholder="Код ошибки, например ER15"' +
+      ' value="' +
+      escapeHtml(state.error) +
+      '"' +
+      '>';
+
+  }
+
+
+  screen.innerHTML =
+
+    '<h2>Уточним симптомы</h2>' +
+
+    createOptions(
+      items,
+      "detail"
+    ) +
+
+    errorInput +
+
+    '<div' +
+    ' id="errorMessage"' +
+    ' class="error-message"' +
+    '></div>' +
+
+    createBackButton(4) +
+
+    '<button' +
+    ' type="button"' +
+    ' id="nextButton"' +
+    ' class="next' +
+    (
+      state.detail
+        ? " ready"
+        : ""
+    ) +
+    '"' +
+    '>Далее</button>';
+
+
+  bindOptions();
+
+  bindBack();
+
+  bindNext(function(){
+
+    if(!state.detail){
+
+      showError(
+        "Выберите уточнение."
+      );
+
+      return;
+
+    }
+
+
+    if(
+      state.symptom ===
+      "Появляется ошибка"
+    ){
+
+      const input =
+        document.getElementById(
+          "errorInput"
+        );
+
+
+      state.error =
+        input
+          ? input.value.trim()
+          : "";
+
+
+      if(!state.error){
+
+        state.error =
+          "Код не указан";
+
+      }
+
+    }
+
+    else{
+
+      state.error =
+        "Нет / не указан";
+
+    }
+
+
+    showStep(6);
+
+  });
+
+}
+
+
+/*
+====================================================
+ ШАГ 6
+====================================================
+*/
+
+function renderStep6(screen){
+
+  screen.innerHTML =
+
+    '<h2>Что уже пробовали делать?</h2>' +
+
+    '<textarea' +
+    ' id="triedInput"' +
+    ' placeholder="Например: чистил, промывал, менял фильтр..."' +
+    '>' +
+
+    escapeHtml(
+      state.tried
+    ) +
+
+    '</textarea>' +
+
+    '<div' +
+    ' id="errorMessage"' +
+    ' class="error-message"' +
+    '></div>' +
+
+    createBackButton(5) +
+
+    '<button' +
+    ' type="button"' +
+    ' id="nextButton"' +
+    ' class="next ready"' +
+    '>Посмотреть заявку</button>';
+
+
+  bindBack();
+
+  bindNext(function(){
+
+    const input =
+      document.getElementById(
+        "triedInput"
+      );
+
+
+    state.tried =
+      input
+        ? input.value.trim()
+        : "";
+
+
+    if(!state.tried){
+
+      state.tried =
+        "Ничего";
+
+    }
+
+
+    showStep(7);
+
+  });
+
+}
+
+
+/*
+====================================================
+ ШАГ 7
+====================================================
+*/
+
+function renderStep7(screen){
+
+  const reviewText =
+
+    "☕ Марка: " +
+    state.brand +
+
+    "\n📋 Модель: " +
+    state.model +
+
+    "\n\n⚠️ Симптом: " +
+    state.symptom +
+
+    "\n🕐 Когда возникает: " +
+    state.timing +
+
+    "\n🔍 Уточнение: " +
+    state.detail +
+
+    "\n❗ Код ошибки: " +
+    (
+      state.error ||
+      "Нет / не указан"
+    ) +
+
+    "\n\n🛠 Что уже пробовали:\n" +
+    (
+      state.tried ||
+      "Ничего"
+    );
+
+
+  screen.innerHTML =
+
+    '<h2>Проверьте заявку</h2>' +
+
+    '<div class="review">' +
+
+    escapeHtml(
+      reviewText
+    ) +
+
+    '</div>' +
+
+    '<div' +
+    ' id="errorMessage"' +
+    ' class="error-message"' +
+    '></div>' +
+
+    '<button' +
+    ' type="button"' +
+    ' id="sendButton"' +
+    ' class="next ready"' +
+    '>📩 Отправить заявку Егору</button>' +
+
+    createBackButton(6);
+
+
+  bindBack();
+
+  bindSend();
+
+}
+
+
+/*
+====================================================
+ ОТПРАВКА
+====================================================
+*/
+
+function bindSend(){
+
+  const button =
+    document.getElementById(
+      "sendButton"
+    );
+
+
+  if(!button){
+
+    return;
+
+  }
+
+
+  button.addEventListener(
+    "click",
+    sendRequest
+  );
+
+}
+
+
+async function sendRequest(){
+
+  const button =
+    document.getElementById(
+      "sendButton"
+    );
+
+
+  if(!button){
+
+    return;
+
+  }
+
+
+  button.disabled = true;
+
+  button.textContent =
+    "⏳ Отправляем заявку...";
+
+
+  const payload = {
+
+    type:
+      "diagnostic_request",
+
+    brand:
+      state.brand,
+
+    model:
+      state.model,
+
+    symptom:
+      state.symptom,
+
+    timing:
+      state.timing,
+
+    detail:
+      state.detail,
+
+    error:
+      state.error ||
+      "Нет / не указан",
+
+    tried:
+      state.tried ||
+      "Ничего"
+
+  };
+
+
+  try{
+
+    /*
+      Важно:
+
+      Apps Script находится
+      на другом домене.
+
+      Поэтому используем no-cors.
+
+      Сам Apps Script получает POST
+      и отправляет сообщение боту.
+    */
+
+
+    await fetch(
+      BACKEND_URL,
+      {
+        method:"POST",
+
+        mode:"no-cors",
+
+        headers:{
+          "Content-Type":
+            "text/plain;charset=utf-8"
+        },
+
+        body:
+          JSON.stringify(payload)
+      }
+    );
+
+
+    /*
+      При no-cors браузер не позволяет
+      прочитать ответ сервера.
+
+      Но запрос отправлен.
+
+      Показываем успешный экран.
+    */
+
+
+    showStep(8);
+
+
+  }
+
+  catch(error){
+
+    console.error(
+      "SEND ERROR:",
+      error
+    );
+
+
+    button.disabled =
+      false;
+
+    button.textContent =
+      "📩 Отправить заявку Егору";
+
+
+    showError(
+      "Не удалось отправить заявку. Проверьте интернет-соединение и попробуйте ещё раз."
+    );
+
+  }
+
+}
+
+
+/*
+====================================================
+ NEXT
+====================================================
+*/
+
+function bindNext(callback){
+
+  const button =
+    document.getElementById(
+      "nextButton"
+    );
+
+
+  if(!button){
+
+    return;
+
+  }
+
+
+  button.addEventListener(
+    "click",
+    callback
+  );
+
+}
+
+
+/*
+====================================================
+ ОШИБКИ UI
+====================================================
+*/
+
+function showError(message){
+
+  const element =
+    document.getElementById(
+      "errorMessage"
+    );
+
+
+  if(!element){
+
+    alert(message);
+
+    return;
+
+  }
+
+
+  element.textContent =
+    message;
+
+
+  element.style.display =
+    "block";
+
+
+  setTimeout(
+    function(){
+
+      element.style.display =
+        "none";
+
+    },
+    3500
+  );
+
+}
+
+
+/*
+====================================================
+ УСПЕХ
+====================================================
+*/
+
+function renderSuccess(screen){
+
+  screen.innerHTML =
+
+    '<div class="success">' +
+
+    '<div class="success-icon">✅</div>' +
+
+    '<h2>Заявка отправлена</h2>' +
+
+    '<p>' +
+
+    'Информация о кофемашине отправлена Егору.' +
+
+    '<br><br>' +
+
+    'Он сможет изучить симптомы и связаться с вами для уточнения деталей.' +
+
+    '</p>' +
+
+    '</div>';
+
+}
+
+
+/*
+====================================================
+ СТАРТ
+====================================================
+*/
+
+function start(){
+
+  initTelegram();
+
+  showStep(1);
+
+}
+
+
+/*
+====================================================
+ ЗАПУСК
+====================================================
+*/
+
+if(
+  document.readyState ===
+  "loading"
+){
+
+  document.addEventListener(
+    "DOMContentLoaded",
+    st
