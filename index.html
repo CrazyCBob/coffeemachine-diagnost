@@ -1,30 +1,168 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>TEST</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Диагностика кофемашины</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #3C2F2F;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+.container {
+  max-width: 600px;
+  margin: auto;
+  padding: 20px 16px 40px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.logo {
+  font-size: 42px;
+}
+
+h1 {
+  font-size: 24px;
+  margin: 8px 0;
+}
+
+.subtitle {
+  color: #d5caca;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.progress {
+  height: 6px;
+  background: #594949;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 20px 0 30px;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 14%;
+  background: #FF5722;
+}
+
+.step {
+  display: none;
+}
+
+.step.active {
+  display: block;
+}
+
+.question {
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 1.35;
+  margin-bottom: 18px;
+}
+
+.option {
+  background: #4a3939;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.option.selected {
+  border-color: #FF5722;
+  background: #5a4039;
+}
+
+button {
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 12px;
+  margin-top: 10px;
+  background: #FF5722;
+  color: white;
+  font-size: 17px;
+  font-weight: bold;
+}
+
+button:disabled {
+  background: #665552;
+  color: #aaa;
+}
+
+.back {
+  background: #594949;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 16px;
+  border-radius: 12px;
+  border: 2px solid #594949;
+  background: #302424;
+  color: white;
+  font-size: 16px;
+  outline: none;
+}
+
+textarea {
+  min-height: 130px;
+}
+
+.card {
+  background: #4a3939;
+  border-radius: 12px;
+  padding: 18px;
+  line-height: 1.6;
+}
+
+.success {
+  text-align: center;
+  padding-top: 30px;
+}
+
+.success-icon {
+  font-size: 60px;
+}
+</style>
 </head>
 
-<body style="background:#3C2F2F;color:white;font-family:Arial;padding:30px">
+<body>
 
-<h2>ТЕСТ JAVASCRIPT</h2>
+<div class="container">
 
-<button
-  onclick="test()"
-  style="padding:20px;width:100%;font-size:20px">
-  НАЖМИ МЕНЯ
-</button>
+  <div class="header">
+    <div class="logo">☕🔧</div>
+    <h1>Диагностика кофемашины</h1>
+    <div class="subtitle">
+      Ответьте на несколько вопросов, чтобы описать проблему.
+    </div>
+  </div>
 
-<p id="result" style="font-size:20px;margin-top:30px">
-  Пока ничего не произошло
-</p>
+  <div class="progress">
+    <div class="progress-bar" id="progress"></div>
+  </div>
 
-<script>
-function test() {
-  document.getElementById("result").innerText =
-    "✅ JAVASCRIPT РАБОТАЕТ";
-}
-</script>
 
-</body>
-</html>
+  <!-- 1 -->
+
+  <div class="step active" id="step1">
+
+    <div class="question">
+      Что происходит с кофемашиной?
+    </div
