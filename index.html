@@ -84,6 +84,8 @@ h1{
 }
 
 .option{
+  display:block;
+  width:100%;
   background:#5a4545;
   border:2px solid transparent;
   border-radius:13px;
@@ -94,16 +96,30 @@ h1{
   cursor:pointer;
   user-select:none;
   touch-action:manipulation;
-  transition:.15s;
-}
-
-.option:active{
-  transform:scale(.98);
 }
 
 .option.selected{
   border-color:#FF5722;
   background:#654343;
+}
+
+.btn{
+  display:block;
+  width:100%;
+  border:0;
+  border-radius:13px;
+  padding:16px;
+  margin-top:18px;
+  background:#FF5722;
+  color:#fff;
+  font-size:17px;
+  font-weight:bold;
+  cursor:pointer;
+  touch-action:manipulation;
+}
+
+.btn:disabled{
+  opacity:.45;
 }
 
 input,
@@ -121,28 +137,6 @@ textarea{
 textarea{
   min-height:110px;
   resize:vertical;
-}
-
-.btn{
-  width:100%;
-  border:0;
-  border-radius:13px;
-  padding:16px;
-  margin-top:18px;
-  background:#FF5722;
-  color:#fff;
-  font-size:17px;
-  font-weight:bold;
-  cursor:pointer;
-  touch-action:manipulation;
-}
-
-.btn:active{
-  transform:scale(.98);
-}
-
-.btn:disabled{
-  opacity:.45;
 }
 
 .result{
@@ -200,23 +194,39 @@ textarea{
 Что происходит с кофемашиной?
 </div>
 
-<div class="option" data-key="symptom" data-value="Не включается">🔌 Не включается</div>
+<div class="option" onclick="selectOption('symptom','Не включается',this)">
+🔌 Не включается
+</div>
 
-<div class="option" data-key="symptom" data-value="Течёт">💧 Течёт</div>
+<div class="option" onclick="selectOption('symptom','Течёт',this)">
+💧 Течёт
+</div>
 
-<div class="option" data-key="symptom" data-value="Не делает кофе">☕ Не делает кофе</div>
+<div class="option" onclick="selectOption('symptom','Не делает кофе',this)">
+☕ Не делает кофе
+</div>
 
-<div class="option" data-key="symptom" data-value="Не мелет">⚙️ Не мелет</div>
+<div class="option" onclick="selectOption('symptom','Не мелет',this)">
+⚙️ Не мелет
+</div>
 
-<div class="option" data-key="symptom" data-value="Не нагревает">🔥 Не нагревает</div>
+<div class="option" onclick="selectOption('symptom','Не нагревает',this)">
+🔥 Не нагревает
+</div>
 
-<div class="option" data-key="symptom" data-value="Ошибка на дисплее">⚠️ Ошибка на дисплее</div>
+<div class="option" onclick="selectOption('symptom','Ошибка на дисплее',this)">
+⚠️ Ошибка на дисплее
+</div>
 
-<div class="option" data-key="symptom" data-value="🥛 Не делает молочную пену">🥛 Не делает молочную пену</div>
+<div class="option" onclick="selectOption('symptom','🥛 Не делает молочную пену',this)">
+🥛 Не делает молочную пену
+</div>
 
-<div class="option" data-key="symptom" data-value="Другая проблема">❓ Другая проблема</div>
+<div class="option" onclick="selectOption('symptom','Другая проблема',this)">
+❓ Другая проблема
+</div>
 
-<button class="btn" id="next1" disabled>
+<button class="btn" id="next1" onclick="goStep2()" disabled>
 Далее
 </button>
 
@@ -233,7 +243,7 @@ textarea{
 
 <div id="brands"></div>
 
-<button class="btn" id="next2" disabled>
+<button class="btn" id="next2" onclick="goStep3()" disabled>
 Далее
 </button>
 
@@ -254,7 +264,7 @@ type="text"
 placeholder="Например: Jura E8"
 >
 
-<button class="btn" id="next3">
+<button class="btn" onclick="goStep4()">
 Далее
 </button>
 
@@ -271,7 +281,7 @@ placeholder="Например: Jura E8"
 
 <div id="timings"></div>
 
-<button class="btn" id="next4" disabled>
+<button class="btn" id="next4" onclick="goStep5()" disabled>
 Далее
 </button>
 
@@ -288,7 +298,7 @@ placeholder="Например: Jura E8"
 
 <div id="details"></div>
 
-<button class="btn" id="next5" disabled>
+<button class="btn" id="next5" onclick="goStep6()" disabled>
 Далее
 </button>
 
@@ -308,7 +318,7 @@ id="tried"
 placeholder="Например: чистил кофемашину, промывал систему, перезапускал..."
 ></textarea>
 
-<button class="btn" id="finishBtn">
+<button class="btn" onclick="finish()">
 Получить предварительную диагностику
 </button>
 
@@ -325,7 +335,7 @@ placeholder="Например: чистил кофемашину, промыва
 
 <div id="diagnosis" class="result"></div>
 
-<button class="btn" id="sendBtn">
+<button class="btn" onclick="sendRequest()" id="sendBtn">
 📩 Отправить заявку Егору
 </button>
 
@@ -336,4 +346,305 @@ placeholder="Например: чистил кофемашину, промыва
 </div>
 
 
-<!-- У
+<!-- УСПЕХ -->
+
+<div class="step" id="success">
+
+<div class="success">
+
+<div class="success-icon">✅</div>
+
+<h2>Заявка отправлена</h2>
+
+<p>
+Егор получил информацию о вашей кофемашине
+и сможет посмотреть заявку.
+</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+
+<script>
+
+const tg =
+window.Telegram && window.Telegram.WebApp;
+
+if(tg){
+tg.ready();
+tg.expand();
+}
+
+
+/* =========================
+ДАННЫЕ
+========================= */
+
+const A = {
+symptom:'',
+brand:'',
+model:'',
+timing:'',
+detail:'',
+tried:'',
+error:''
+};
+
+
+/* =========================
+АДРЕС BACKEND
+========================= */
+
+const API_URL =
+'https://script.google.com/macros/s/AKfycbxJTKB6roMw4eeWYOYjJC2rLWOeNE2ahy3JUqNU53ZjZpVkzJD9iEo-bqTzP6xFjLa1/exec';
+
+
+/* =========================
+ВЫБОР
+========================= */
+
+function selectOption(key,value,element){
+
+A[key]=value;
+
+const parent=element.parentElement;
+
+const options=parent.querySelectorAll('.option');
+
+options.forEach(function(item){
+item.classList.remove('selected');
+});
+
+element.classList.add('selected');
+
+
+if(key==='symptom'){
+document.getElementById('next1').disabled=false;
+}
+
+if(key==='brand'){
+document.getElementById('next2').disabled=false;
+}
+
+if(key==='timing'){
+document.getElementById('next4').disabled=false;
+}
+
+if(key==='detail'){
+document.getElementById('next5').disabled=false;
+}
+
+}
+
+
+/* =========================
+ШАГ
+========================= */
+
+function showStep(number){
+
+const steps=document.querySelectorAll('.step');
+
+steps.forEach(function(step){
+step.classList.remove('active');
+});
+
+const target=document.getElementById('step'+number);
+
+if(target){
+target.classList.add('active');
+}
+
+updateProgress(number);
+
+window.scrollTo(0,0);
+
+}
+
+
+/* =========================
+ШАГ 1 → 2
+========================= */
+
+function goStep2(){
+
+if(!A.symptom){
+alert('Сначала выберите проблему');
+return;
+}
+
+showStep(2);
+
+}
+
+
+/* =========================
+МАРКИ
+========================= */
+
+const brands=[
+'Jura',
+'DeLonghi',
+'BORK',
+'Saeco',
+'Philips',
+'WMF',
+'Bosch / Siemens',
+'Melitta',
+'Krups',
+'Другая'
+];
+
+
+document.getElementById('brands').innerHTML=
+
+brands.map(function(x){
+
+return `
+<div
+class="option"
+onclick="selectOption('brand','${x}',this)"
+>
+${x}
+</div>
+`;
+
+}).join('');
+
+
+/* =========================
+ШАГ 2 → 3
+========================= */
+
+function goStep3(){
+
+if(!A.brand){
+alert('Сначала выберите марку');
+return;
+}
+
+showStep(3);
+
+}
+
+
+/* =========================
+ШАГ 3 → 4
+========================= */
+
+function goStep4(){
+
+A.model=
+document.getElementById('model').value.trim();
+
+if(!A.model){
+alert('Введите модель кофемашины');
+return;
+}
+
+showStep(4);
+
+}
+
+
+/* =========================
+КОГДА ВОЗНИКАЕТ
+========================= */
+
+const timings=[
+
+'Сразу после включения',
+'При приготовлении кофе',
+'При помоле',
+'При нагреве',
+'При приготовлении молочного напитка',
+'После приготовления',
+'Периодически / иногда',
+'После чистки или декальцинации'
+
+];
+
+
+document.getElementById('timings').innerHTML=
+
+timings.map(function(x){
+
+return `
+<div
+class="option"
+onclick="selectOption('timing','${x}',this)"
+>
+${x}
+</div>
+`;
+
+}).join('');
+
+
+/* =========================
+ШАГ 4 → 5
+========================= */
+
+function goStep5(){
+
+if(!A.timing){
+alert('Сначала выберите вариант');
+return;
+}
+
+buildDetail();
+
+showStep(5);
+
+}
+
+
+/* =========================
+УТОЧНЕНИЯ
+========================= */
+
+function buildDetail(){
+
+const box=document.getElementById('details');
+
+const title=document.getElementById('detailTitle');
+
+let arr=[];
+
+
+if(A.symptom==='🥛 Не делает молочную пену'){
+
+title.textContent=
+'🥛 Что происходит с молочной системой?';
+
+arr=[
+
+'Молоко вообще не засасывает',
+'Идёт молоко, но без пены',
+'Пена получается слишком жидкой',
+'Пена стала хуже постепенно',
+'То делает пену, то нет',
+'Из молочной системы почти ничего не выходит',
+'Другая проблема'
+
+];
+
+}
+
+else if(A.symptom==='Ошибка на дисплее'){
+
+title.textContent=
+'⚠️ Как проявляется ошибка?';
+
+arr=[
+
+'Ошибка появляется сразу после включения',
+'Ошибка появляется при приготовлении кофе',
+'Ошибка появляется при помоле',
+'Ошибка появляется при нагреве',
+'Ошибка появляется при приготовлении молочного напитка',
+'Ошибка появляется после
