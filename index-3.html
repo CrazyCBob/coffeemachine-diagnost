@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Диагностика кофемашины</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root{
+      --bg:#3C2F2F;
+      --card:#4a3a38;
+      --accent:#FF5722;
+      --metal:#A9A9A9;
+      --text:#fff;
+      --muted:#d4c9c7;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      padding:18px;
+      background:var(--bg);
+      color:var(--text);
+      font-family:Arial,sans-serif;
+    }
+    .wrap{max-width:620px;margin:auto}
+    h1{font-size:25px;margin:5px 0 8px}
+    .sub{color:var(--muted);font-size:14px;margin-bottom:22px}
+    .step{display:none}
+    .step.active{display:block}
+    .card{
+      background:var(--card);
+      border-radius:18px;
+      padding:18px;
+      box-shadow:0 8px 25px rgba(0,0,0,.18);
+    }
+    .question{font-size:20px;font-weight:700;margin-bottom:16px}
+    .option{
+      width:100%;
+      border:1px solid rgba(255,255,255,.12);
+      background:#5a4643;
+      color:white;
+      border-radius:13px;
+      padding:15px;
+      margin:8px 0;
+      text-align:left;
+      font-size:16px;
+    }
+    .option.selected{background:var(--accent);border-color:var(--accent)}
+    input,textarea{
+      width:100%;
+      border:0;
+      outline:0;
+      border-radius:13px;
+      padding:14px;
+      margin:7px 0;
+      background:#f4eeee;
+      color:#241d1d;
+      font-size:16px;
+    }
+    textarea{min-height:100px;resize:vertical}
+    .btn{
+      width:100%;
+      border:0;
+      border-radius:14px;
+      padding:15px;
+      margin-top:15px;
+      background:var(--accent);
+      color:white;
+      font-size:17px;
+      font-weight:700;
+    }
+    .btn.secondary{background:#6a5551}
+    .hint{color:var(--muted);font-size:13px;margin-top:8px}
+    .review{
+      white-space:pre-wrap;
+      background:#332727;
+      border-radius:13px;
+      padding:14px;
+      line-height:1.45;
+      font-size:14px;
+    }
+    .checks{display:grid;gap:8px}
+    .check{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      background:#5a4643;
+      border-radius:12px;
+      padding:13px;
+    }
+    .check input{width:auto;margin:0}
+    .success{text-align:center;padding:35px 10px}
+    .success h2{font-size:25px}
+  </style>
+</head>
+
+<body>
+<div class="wrap">
+
+  <h1>🔧 Диагностика кофемашины</h1>
+  <div class="sub">Опишите проблему — я посмотрю заявку и подскажу, что делать дальше.</div>
+
+  <!-- 1 -->
+  <section class="step active" id="step1">
+    <div class="card">
+      <div class="question">Кто обращается?</div>
+      <button class="option" onclick="choose('clientType','private')">👤 Частное лицо</button>
+      <button class="option" onclick="choose('clientType','company')">🏢 Компания / офис</button>
+      <button class="btn" onclick="next()">Далее</button>
+    </div>
+  </section>
+
+  <!-- PRIVATE 2 -->
+  <section class="step" id="step2p">
+    <div class="card">
+      <div class="question">Марка кофемашины</div>
+      <button class="option" onclick="choose('brand','Jura')">Jura</button>
+      <button class="option" onclick="choose('brand','BORK')">BORK</button>
+      <button class="option" onclick="choose('brand','DeLonghi')">DeLonghi</button>
+      <button class="option" onclick="choose('brand','Philips / Saeco')">Philips / Saeco</button>
+      <button class="option" onclick="choose('brand','WMF')">WMF</button>
+      <button class="option" onclick="choose('brand','Другая')">Другая</button>
+      <button class="btn" onclick="next()">Далее</button>
+    </div>
+  </section>
+
+  <!-- PRIVATE 3 -->
+  <section class="step" id="step3p">
+    <div class="card">
+      <div class="question">Модель</div>
+      <input id="model" placeholder="Например: Jura E8">
+      <button class="btn" onclick="next()">Далее</button>
+    </div>
+  </section>
+
+  <!-- PRIVATE 4 -->
+  <section class="step" id="step4p">
+    <div class="card">
+      <div class="question">Что происходит?</div>
+      <button class="option" onclick="choose('symptom','Не делает кофе')">☕ Не делает кофе</button>
+      <button class="option" onclick="choose('symptom','Не делает молочную пену')">🥛 Не делает молочную пену</button>
+      <button class="option" onclick="choose('symptom','Не греет воду / кофе холодный')">🌡️ Не греет воду / кофе холодный</button>
+      <button class="option" onclick="choose('symptom','Кофемашина протекает')">💧 Кофемашина протекает</button>
+      <button class="option" onclick="choose('symptom','Не работает кофемолка')">⚙️ Не работает кофемолка</button>
+      <button class="option" onclick="choose('symptom','Показывает ошибку')">⚠️ Показывает ошибку</button>
+      <button class="option" onclick="choose('symptom','Другая проблема')">Другая проблема</button>
+      <button class="btn" onclick="next()">Далее</button>
+    </div>
+  </section>
+
+  <!-- PRIVATE 5 -->
+  <section class="step" id="step5p">
+    <div class="card">
+      <div class="question">Когда возникает проблема?</div>
+      <button class="option" onclick="choose('timing','Сразу после включения')">Сразу после включения</button>
+      <button class="option" onclick="choose('timing','При приготовлении кофе')">При приготовлении кофе</button>
+      <button class="option" onclick="choose('timing','При помоле')">При помоле</button>
+      <button class="option" onclick="choose('timing','При нагреве')">При нагреве</button>
+      <button class="option" onclick="choose('timing','При приготовлении молочного напитка')">При приготовлении молочного напитка</button>
+      <button class="option" onclick="choose('timing','После приготовления')">После приготовления</button>
+      <button class="option" onclick="choose('timing','Периодически')">Периодически</button>
+      <button class="option" onclick="choose('timing','Постоянно')">Постоянно</button>
+      <button class="btn" onclick="next()">Далее</button>
+    </div>
+  </section>
+
+  <!-- PRIVATE 6 -->
+  <section class="step" id="step6p">
+    <div class="card">
+      <div class="question">Уточним симптом</div>
+      <div id="detailOptions"></div>
+      <textarea id="detailText" placeholder="Если нужно — опишите подробнее"></textarea>
+      <button class="btn" onclick="next()">Далее</button>
+    </div>
+  </section>
+
+  <!-- PRIVATE 7 -->
+  <section class="step" id="step7p">
+    <div class="card">
+      <div class="question">Что уже пробовали?</div>
+      <textarea id="tried" placeholder="Например: промыл молочную систему, сделал декальцинацию, перезагрузил..."></textarea>
+      <button class="btn" onclick="next()">Посмотреть заявку</button>
+    </div>
+  </section>
+
+  <!-- COMPANY 2 -->
+  <section class="step" id="step2c">
+    <div class="card">
+      <div class="question">Какое оборудование нужно обслуживать?</div>
+      <div class="checks">
+        <label class="check"><input type="checkbox" value="Кофемашины" onchange="toggleEquipment(this)"> ☕ Кофемашины</label>
+        <label class="check"><input type="checkbox" value="Пурифайеры / кулеры" onchange="toggleEquipment(this)"> 💧 Пурифайеры / кулеры</label>
+        <label class="check"><input type="checkbox" value="Электрические чайники" onchange="toggleEquipment(this)"> 🫖 Электрические чайники</label>
+      </div>
+      <button class="btn" onclick="next()">Далее</button>
+    </div>
+  </section>
+
+  <!-- COMPANY 3 -->
+  <section class="step" id="step3c">
+    <div class="card">
+      <div class="question">Сколько оборудования?</div>
+      <input id="coffeeMachines" type="number" min="0" placeholder="Кофемашин">
+      <input id="waterEquipment" type="number" min="0" placeholder="Пурифайеров / кулеров">
+      <input id="kettles" type="number" min="0" placeholder="Чайников">
+      <button class="btn" onclick="next()">Далее</button>
+    </div>
+  </section>
+
+  <!-- COMPANY 4 -->
+  <section class="step" id="step4c">
+    <div class="card">
+      <div class="question">Как сейчас обслуживают оборудование?</div>
+      <button class="option" onclick="choose('currentService','Есть свой специалист')">Есть свой специалист</button>
+      <button class="option" onclick="choose('currentService','Вызываем мастера по необходимости')">Вызываем мастера по необходимости</button>
+      <button class="option" onclick="choose('currentService','Обслуживаем сами')">Обслуживаем сами</button>
+      <button class="option" onclick="choose('currentService','Регулярного обслуживания нет')">Регулярного обслуживания нет</button>
+      <button class="option" onclick="choose('currentService','Другое')">Другое</button>
+      <button class="btn" onclick="next()">Далее</button>
+    </div>
+  </section>
+
+  <!-- COMPANY 5 -->
+  <section class="step" id="step5c">
+    <div class="card">
+      <div class="question">Что требуется?</div>
+      <button class="option" onclick="choose('serviceNeed','Разовое обслуживание')">Разовое обслуживание</button>
+      <button class="option" onclick="choose('serviceNeed','Ежемесячное обслуживание')">Ежемесячное обслуживание</button>
+      <button class="option" onclick="choose('serviceNeed','Ремонт')">Ремонт</button>
+      <button class="option" onclick="choose('serviceNeed','Полное обслуживание оборудования офиса')">Полное обслуживание оборудования офиса</button>
+      <button class="btn" onclick="next()">Далее</button>
+    </div>
+  </section>
+
+  <!-- COMPANY 6 -->
+  <section class="step" id="step6c">
+    <div class="card">
+      <div class="question">Контактные данные</div>
+      <input id="contactName" placeholder="Контактное лицо">
+      <input id="phone" type="tel" placeholder="Телефон">
+      <input id="address" placeholder="Адрес офиса">
+      <textarea id="comment" placeholder="Комментарий: удобное время, особенности оборудования и т.д."></textarea>
+      <button class="btn" onclick="next()">Посмотреть заявку</button>
+    </div>
+  </section>
+
+  <!-- REVIEW -->
+  <section class="step" id="step7review">
+    <div class="card">
+      <div class="question">Проверьте заявку</div>
+      <div class="review" id="review"></div>
+      <button class="btn" onclick="send()">📩 Отправить заявку Егору</button>
+      <button class="btn secondary" onclick="back()">← Назад</button>
+    </div>
+  </section>
+
+  <!-- SUCCESS -->
+  <section class="step" id="success">
+    <div class="card success">
+      <h2>✅ Заявка отправлена</h2>
+      <div class="sub">Егор получил вашу заявку и свяжется с вами.</div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+const tg = window.Telegram && window.Telegram.WebApp;
+if(tg){
+  tg.ready();
+  tg.expand();
+}
+
+const BACKEND_URL =
+  'https://script.google.com/macros/s/AKfycbxJTKB6roMw4eeWYOYjJC2rLWOeNE2ahy3JUqNU53ZjZpVkzJD9iEo-bqTzP6xFjLa1/exec';
+
+const s = {
+  clientType:'',
+  brand:'',
+  model:'',
+  symptom:'',
+  timing:'',
+  detail:'',
+  tried:'',
+  equipment:[],
+  coffeeMachines:'',
+  waterEquipment:'',
+  kettles:'',
+  currentService:'',
+  serviceNeed:'',
+  contactName:'',
+  phone:'',
+  address:'',
+  comment:''
+};
+
+let step = 1;
+let sending = false;
+
+function show(id){
+  document.querySelectorAll('.step').forEach(x=>x.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function choose(key,value){
+  s[key]=value;
+  document.querySelectorAll('.option').forEach(x=>x.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+
+  if(key==='symptom'){
+    buildDetails();
+  }
+}
+
+function toggleEquipment(el){
+  if(el.checked){
+    if(!s.equipment.includes(el.value)) s.equipment.push(el.value);
+  }else{
+    s.equipment=s.equipment.filter(x=>x!==el.value);
+  }
+}
+
+function buildDetails(){
+  const box=document.getElementById('detailOptions');
+  let arr=[];
+
+  if(s.symptom==='Не делает молочную пену'){
+    arr=[
+      'Молоко вообще не засасывает',
+      'Идёт молоко, но без пены',
+      'Пена получается слишком жидкой',
+      'Пена стала хуже постепенно',
+      'То делает пену, то нет',
+      'Из молочной системы почти ничего не выходит',
+      'Другая проблема'
+    ];
+  }else if(s.symptom==='Показывает ошибку'){
+    arr=[
+      'Ошибка появляется сразу после включения',
+      'Ошибка появляется при приготовлении кофе',
+      'Ошибка появляется при помоле',
+      'Ошибка появляется при нагреве',
+      'Ошибка появляется при приготовлении молочного напитка',
+      'Ошибка появляется после приготовления',
+      'Ошибка появляется периодически',
+      'Ошибка появляется постоянно',
+      'Другое'
+    ];
+  }else{
+    arr=[
+      'Проблема появилась внезапно',
+      'Проблема появилась постепенно',
+      'Проблема возникает постоянно',
+      'Проблема возникает периодически',
+      'Другая ситуация'
+    ];
+  }
+
+  box.innerHTML=arr.map(x=>
+    '<button class="option" onclick="chooseDetail(this)">'+x+'</button>'
+  ).join('');
+}
+
+function chooseDetail(el){
+  s.detail=el.textContent;
+  document.querySelectorAll('#detailOptions .option').forEach(x=>x.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function next(){
+  if(step===1){
+    if(!s.clientType) return;
+    step=2;
+    return show(s.clientType==='private'?'step2p':'step2c');
+  }
+
+  if(s.clientType==='private'){
+    if(step===2){
+      if(!s.brand)return;
+      step=3; return show('step3p');
+    }
+    if(step===3){
+      s.model=document.getElementById('model').value.trim();
+      if(!s.model)return;
+      step=4; return show('step4p');
+    }
+    if(step===4){
+      if(!s.symptom)return;
+      step=5; return show('step5p');
+    }
+    if(step===5){
+      if(!s.timing)return;
+      step=6; return show('step6p');
+    }
+    if(step===6){
+      s.detail=document.getElementById('detailText').value.trim() || s.detail;
+      if(!s.detail)return;
+      step=7; return show('step7p');
+    }
+    if(step===7){
+      s.tried=document.getElementById('tried').value.trim() || 'Ничего';
+      step=8; return renderReview();
+    }
+  }
+
+  if(s.clientType==='company'){
+    if(step===2){
+      if(!s.equipment.length)return;
+      step=3; return show('step3c');
+    }
+    if(step===3){
+      s.coffeeMachines=document.getElementById('coffeeMachines').value || '0';
+      s.waterEquipment=document.getElementById('waterEquipment').value || '0';
+      s.kettles=document.getElementById('kettles').value || '0';
+      step=4; return show('step4c');
+    }
+    if(step===4){
+      if(!s.currentService)return;
+      step=5; return show('step5c');
+    }
+    if(step===5){
+      if(!s.serviceNeed)return;
+      step=6; return show('step6c');
+    }
+    if(step===6){
+      s.contactName=document.getElementById('contactName').value.trim();
+      s.phone=document.getElementById('phone').value.trim();
+      s.address=document.getElementById('address').value.trim();
+      s.comment=document.getElementById('comment').value.trim() || 'Нет';
+      if(!s.contactName || !s.phone || !s.address)return;
+      step=7; return renderReview();
+    }
+  }
+}
+
+function renderReview(){
+  let text='';
+
+  if(s.clientType==='private'){
+    text =
+      '👤 Частное лицо\n\n' +
+      '☕ Марка: '+s.brand+'\n' +
+      '📋 Модель: '+s.model+'\n\n' +
+      '⚠️ Симптом: '+s.symptom+'\n' +
+      '🕐 Когда возникает: '+s.timing+'\n' +
+      '🔍 Уточнение: '+s.detail+'\n\n' +
+      '🛠 Что уже пробовали:\n'+s.tried;
+  }else{
+    text =
+      '🏢 Компания / офис\n\n' +
+      'Оборудование: '+s.equipment.join(', ')+'\n' +
+      '☕ Кофемашин: '+s.coffeeMachines+'\n' +
+      '💧 Пурифайеров / кулеров: '+s.waterEquipment+'\n' +
+      '🫖 Чайников: '+s.kettles+'\n\n' +
+      '🔧 Как сейчас обслуживают:\n'+s.currentService+'\n\n' +
+      '🎯 Что требуется:\n'+s.serviceNeed+'\n\n' +
+      '👤 Контакт: '+s.contactName+'\n' +
+      '📞 Телефон: '+s.phone+'\n' +
+      '📍 Адрес: '+s.address+'\n\n' +
+      '💬 Комментарий:\n'+s.comment;
+  }
+
+  document.getElementById('review').textContent=text;
+  show('step7review');
+}
+
+function getTelegramData(){
+  const u = tg && tg.initDataUnsafe ? tg.initDataUnsafe.user : null;
+
+  return {
+    telegramName: u ? ([u.first_name,u.last_name].filter(Boolean).join(' ')) : '',
+    telegramUsername: u && u.username ? u.username : '',
+    telegramId: u && u.id ? String(u.id) : ''
+  };
+}
+
+async function send(){
+  if(sending)return;
+  sending=true;
+
+  const t=getTelegramData();
+
+  const payload={
+    type:'diagnostic_request',
+    clientType:s.clientType,
+    telegramName:t.telegramName,
+    telegramUsername:t.telegramUsername,
+    telegramId:t.telegramId,
+
+    brand:s.brand,
+    model:s.model,
+    symptom:s.symptom,
+    timing:s.timing,
+    detail:s.detail,
+    tried:s.tried,
+
+    equipment:s.equipment.join(', '),
+    coffeeMachines:s.coffeeMachines,
+    waterEquipment:s.waterEquipment,
+    kettles:s.kettles,
+    currentService:s.currentService,
+    serviceNeed:s.serviceNeed,
+    contactName:s.contactName,
+    phone:s.phone,
+    address:s.address,
+    comment:s.comment
+  };
+
+  try{
+    await fetch(
+      BACKEND_URL,
+      {
+        method:'POST',
+        mode:'no-cors',
+        headers:{
+          'Content-Type':'text/plain;charset=utf-8'
+        },
+        body:JSON.stringify(payload)
+      }
+    );
+
+    show('success');
+  }catch(e){
+    alert('Не удалось отправить заявку. Проверьте интернет и попробуйте ещё раз.');
+  }finally{
+    sending=false;
+  }
+}
+
+function back(){
+  if(s.clientType==='private'){
+    step=7;
+    show('step7p');
+  }else{
+    step=6;
+    show('step6c');
+  }
+}
+
+</script>
+</body>
+</html>
