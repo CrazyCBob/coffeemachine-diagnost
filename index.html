@@ -1,338 +1,1133 @@
-const BOT_TOKEN =
-  PropertiesService.getScriptProperties().getProperty('BOT_TOKEN');
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#3C2F2F">
+<title>Диагностика кофемашин</title>
 
-const ADMIN_CHAT_ID =
-  PropertiesService.getScriptProperties().getProperty('ADMIN_CHAT_ID');
+<style>
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;
+  min-height:100%;
+  background:#3C2F2F;
+  color:#fff;
+  font-family:Arial,sans-serif
+}
+
+body{
+  padding:18px 16px 32px
+}
+
+.app{
+  max-width:620px;
+  margin:auto
+}
+
+.brand{
+  text-align:center;
+  margin:4px 0 18px
+}
+
+.brand h1{
+  font-size:24px;
+  margin:0 0 6px
+}
+
+.brand p{
+  margin:0;
+  color:#d7caca;
+  font-size:14px
+}
+
+.progress{
+  height:7px;
+  background:#594848;
+  border-radius:99px;
+  overflow:hidden;
+  margin:0 0 20px
+}
+
+.bar{
+  height:100%;
+  background:#FF5722;
+  width:14%;
+  transition:.2s
+}
+
+.card{
+  background:#463737;
+  border:1px solid #624f4f;
+  border-radius:18px;
+  padding:20px;
+  box-shadow:0 8px 30px #0002
+}
+
+.eyebrow{
+  color:#ff9a7d;
+  font-size:13px;
+  font-weight:700;
+  margin-bottom:8px
+}
+
+.title{
+  font-size:22px;
+  line-height:1.2;
+  margin:0 0 18px
+}
+
+.sub{
+  color:#d8cccc;
+  font-size:14px;
+  line-height:1.45;
+  margin:-8px 0 18px
+}
+
+.options{
+  display:grid;
+  gap:10px
+}
+
+.option{
+  width:100%;
+  text-align:left;
+  background:#523f3f;
+  color:#fff;
+  border:1px solid #715b5b;
+  border-radius:13px;
+  padding:15px;
+  font-size:16px;
+  cursor:pointer
+}
+
+.option.selected{
+  background:#FF5722;
+  border-color:#FF5722
+}
+
+.option:active{
+  transform:scale(.99)
+}
+
+label{
+  display:block;
+  font-size:14px;
+  color:#ddd;
+  margin:0 0 8px
+}
+
+input,textarea{
+  width:100%;
+  border:1px solid #765f5f;
+  border-radius:12px;
+  background:#352929;
+  color:#fff;
+  padding:14px;
+  font-size:16px;
+  outline:none
+}
+
+textarea{
+  min-height:120px;
+  resize:vertical
+}
+
+input:focus,textarea:focus{
+  border-color:#FF5722
+}
+
+.field{
+  margin-bottom:16px
+}
+
+.actions{
+  display:flex;
+  gap:10px;
+  margin-top:18px
+}
+
+.btn{
+  flex:1;
+  border:0;
+  border-radius:13px;
+  padding:15px;
+  font-size:16px;
+  font-weight:700;
+  cursor:pointer
+}
+
+.next{
+  background:#FF5722;
+  color:#fff
+}
+
+.next:disabled{
+  background:#695252;
+  color:#aaa;
+  cursor:not-allowed
+}
+
+.back{
+  background:#594646;
+  color:#fff
+}
+
+.summary{
+  background:#352929;
+  border-radius:13px;
+  padding:15px;
+  white-space:pre-wrap;
+  line-height:1.5;
+  color:#eee
+}
+
+.success{
+  text-align:center;
+  padding:12px 4px
+}
+
+.success .icon{
+  font-size:54px
+}
+
+.small{
+  font-size:13px;
+  color:#cdbebe
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <div class="brand">
+    <h1>Диагностика кофемашин</h1>
+    <p>Поможем понять, что происходит с кофемашиной</p>
+  </div>
+
+  <div class="progress">
+    <div id="bar" class="bar"></div>
+  </div>
+
+  <div id="app"></div>
+
+</div>
+
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+<script>
+
+const BACKEND_URL =
+'https://script.google.com/macros/s/AKfycbxJTKB6roMw4eeWYOYjJC2rLWOeNE2ahy3JUqNU53ZjZpVkzJD9iEo-bqTzP6xFjLa1/exec';
+
+const tg =
+window.Telegram &&
+window.Telegram.WebApp
+? window.Telegram.WebApp
+: null;
+
+if(tg){
+
+  try{
+    tg.ready();
+    tg.expand();
+  }catch(e){}
+
+}
+
+const tgUser =
+tg &&
+tg.initDataUnsafe &&
+tg.initDataUnsafe.user
+? tg.initDataUnsafe.user
+: {};
+
+const s = {
+
+  clientType:'',
+
+  brand:'',
+  model:'',
+  symptom:'',
+  timing:'',
+  detail:'',
+  error:'',
+  errorBefore:'',
+  tried:'',
+
+  coffeeMachines:'',
+  waterEquipment:'',
+  kettles:'',
+  currentService:'',
+  serviceNeed:'',
+  address:'',
+  contactName:'',
+  phone:'',
+  comment:'',
+
+  equipment:[]
+
+};
+
+let step = 1;
+
+const total = 9;
 
 
-function doPost(e) {
-  try {
-    const data = JSON.parse(e.postData.contents);
+/* =========================
+   СПИСКИ
+========================= */
 
-    if (data.type === 'diagnostic_request') {
-      sendDiagnosticRequest(data);
-    }
+const individualSymptoms = [
 
-    return ContentService
-      .createTextOutput(JSON.stringify({ ok: true }))
-      .setMimeType(ContentService.MimeType.JSON);
+  'Не делает кофе',
+  'Не включается',
+  'Течёт вода',
+  'Плохо греет',
+  'Плохо мелет кофе',
+  '🥛 Не делает молочную пену',
+  'Ошибка на дисплее',
+  'Другая проблема'
 
-  } catch (error) {
+];
 
-    return ContentService
-      .createTextOutput(JSON.stringify({
-        ok: false,
-        error: String(error)
-      }))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
+const brands = [
+
+  'Jura',
+  'BORK',
+  'DeLonghi',
+  'Philips',
+  'Saeco',
+  'Bosch',
+  'Siemens',
+  'Krups',
+  'WMF',
+  'Melitta',
+  'Nivona',
+  'Другая марка'
+
+];
+
+const timings = [
+
+  'При включении',
+  'При приготовлении кофе',
+  'При помоле',
+  'При нагреве',
+  'При приготовлении молочного напитка',
+  'После приготовления',
+  'Периодически',
+  'Постоянно',
+  'Другое'
+
+];
+
+const milkDetails = [
+
+  'Молоко вообще не засасывает',
+  'Идёт молоко, но без пены',
+  'Пена получается слишком жидкой',
+  'Пена стала хуже постепенно',
+  'То делает пену, то нет',
+  'Из молочной системы почти ничего не выходит',
+  'Другая проблема'
+
+];
+
+const errorTimings = [
+
+  'Ошибка появляется сразу после включения',
+  'Ошибка появляется при приготовлении кофе',
+  'Ошибка появляется при помоле',
+  'Ошибка появляется при нагреве',
+  'Ошибка появляется при приготовлении молочного напитка',
+  'Ошибка появляется после приготовления',
+  'Ошибка появляется периодически',
+  'Ошибка появляется постоянно',
+  'Другое'
+
+];
+
+const genericDetails = [
+
+  'Вода уходит в поддон',
+  'Вода идёт не туда / течёт внутри',
+  'Кофе не выходит из носика',
+  'Кофе выходит очень медленно',
+  'Кофе получается слабым',
+  'Кофемашина издаёт необычный звук',
+  'Проблема появляется не всегда',
+  'Другая проблема'
+
+];
+
+const equipmentChoices = [
+
+  '☕ Кофемашины',
+  '💧 Пурифайеры / кулеры',
+  '🫖 Электрические чайники'
+
+];
+
+
+/* =========================
+   ВСПОМОГАТЕЛЬНЫЕ
+========================= */
+
+function esc(v){
+
+  return String(v ?? '')
+    .replace(/[&<>"']/g,function(m){
+
+      return {
+        '&':'&amp;',
+        '<':'&lt;',
+        '>':'&gt;',
+        '"':'&quot;',
+        "'":'&#39;'
+
+      }[m];
+
+    });
+
 }
 
 
-function sendDiagnosticRequest(data) {
+function userContact(){
 
-  if (!BOT_TOKEN) {
-    throw new Error('BOT_TOKEN не найден');
-  }
+  return {
 
-  if (!ADMIN_CHAT_ID) {
-    throw new Error('ADMIN_CHAT_ID не найден');
-  }
+    telegramName:
+      [
+        tgUser.first_name,
+        tgUser.last_name
+      ]
+      .filter(Boolean)
+      .join(' '),
 
+    telegramUsername:
+      tgUser.username || '',
 
-  let message = '';
+    telegramId:
+      tgUser.id || ''
 
+  };
 
-  // ==========================================
-  // КОМПАНИЯ / ОФИС
-  // ==========================================
-
-  if (data.clientType === 'company') {
-
-    message =
-      '🏢 НОВАЯ ЗАЯВКА — ОБСЛУЖИВАНИЕ ОФИСА\n\n' +
-
-      '👤 Контактное лицо: ' +
-      (data.contactName || 'Не указано') + '\n' +
-
-      '📞 Телефон: ' +
-      (data.phone || 'Не указан') + '\n' +
-
-      '📍 Адрес: ' +
-      (data.address || 'Не указан') + '\n\n' +
-
-      '☕ Кофемашин: ' +
-      (data.coffeeMachines || 'Не указано') + '\n' +
-
-      '💧 Пурифайеров / кулеров: ' +
-      (data.waterEquipment || 'Не указано') + '\n' +
-
-      '🫖 Чайников: ' +
-      (data.kettles || 'Не указано') + '\n\n' +
-
-      '🔧 Как сейчас обслуживают:\n' +
-      (data.currentService || 'Не указано') + '\n\n' +
-
-      '🎯 Что требуется:\n' +
-      (data.serviceNeed || 'Не указано') + '\n\n' +
-
-      '💬 Комментарий:\n' +
-      (data.comment || 'Нет') + '\n\n' +
-
-      buildTelegramContact(data);
-
-  }
-
-
-  // ==========================================
-  // ЧАСТНОЕ ЛИЦО
-  // ==========================================
-
-  else {
-
-    message =
-      '🔧 НОВАЯ ЗАЯВКА НА ДИАГНОСТИКУ\n\n' +
-
-      '👤 Клиент:\n' +
-      buildTelegramContact(data) + '\n\n' +
-
-      '☕ Марка: ' +
-      (data.brand || 'Не указана') + '\n' +
-
-      '📋 Модель: ' +
-      (data.model || 'Не указана') + '\n\n' +
-
-      '⚠️ Симптом: ' +
-      (data.symptom || 'Не указан') + '\n' +
-
-      '🕐 Когда возникает: ' +
-      (data.timing || 'Не указано') + '\n' +
-
-      '🔍 Уточнение: ' +
-      (data.detail || 'Не указано') + '\n\n' +
-
-      '❗ Код ошибки: ' +
-      (data.error || 'Нет / не указан') + '\n\n' +
-
-      '🛠 Что уже пробовали:\n' +
-      (data.tried || 'Не указано');
-  }
-
-
-  const url =
-    'https://api.telegram.org/bot' +
-    BOT_TOKEN +
-    '/sendMessage';
-
-
-  const response = UrlFetchApp.fetch(url, {
-
-    method: 'post',
-
-    contentType: 'application/json',
-
-    payload: JSON.stringify({
-
-      chat_id: ADMIN_CHAT_ID,
-
-      text: message,
-
-      disable_web_page_preview: true
-
-    }),
-
-    muteHttpExceptions: true
-
-  });
-
-
-  const result =
-    JSON.parse(response.getContentText());
-
-
-  if (!result.ok) {
-
-    throw new Error(
-      response.getContentText()
-    );
-
-  }
 }
 
 
-// ==========================================
-// ДАННЫЕ TELEGRAM-КЛИЕНТА
-// ==========================================
+function setBar(){
 
-function buildTelegramContact(data) {
+  document.getElementById('bar').style.width =
+    Math.min(
+      100,
+      Math.round(step / total * 100)
+    ) + '%';
 
-  let result = '';
-
-  if (data.telegramName) {
-
-    result +=
-      'Имя: ' +
-      data.telegramName +
-      '\n';
-
-  }
-
-  if (data.telegramUsername) {
-
-    result +=
-      'Telegram: @' +
-      data.telegramUsername +
-      '\n';
-
-  }
-
-  if (data.telegramId) {
-
-    result +=
-      'Telegram ID: ' +
-      data.telegramId;
-
-  }
-
-
-  if (!result) {
-
-    result =
-      'Telegram-контакт не определён';
-
-  }
-
-
-  return result;
 }
 
 
-// ==========================================
-// ПЕРВИЧНАЯ НАСТРОЙКА ADMIN CHAT ID
-// ==========================================
+function shell(
+  eyebrow,
+  title,
+  sub,
+  body,
+  buttons=''
+){
 
-function setupAdmin() {
+  document.getElementById('app').innerHTML =
 
-  if (!BOT_TOKEN) {
+    '<div class="card">' +
 
-    throw new Error(
-      'BOT_TOKEN не найден'
-    );
+      '<div class="eyebrow">' +
+        esc(eyebrow) +
+      '</div>' +
 
-  }
+      '<h2 class="title">' +
+        esc(title) +
+      '</h2>' +
 
+      (
+        sub
+        ?
+        '<div class="sub">' +
+          esc(sub) +
+        '</div>'
+        :
+        ''
+      ) +
 
-  const url =
-    'https://api.telegram.org/bot' +
-    BOT_TOKEN +
-    '/getUpdates';
+      body +
 
+      buttons +
 
-  const response =
-    UrlFetchApp.fetch(url);
+    '</div>';
 
+  setBar();
 
-  const data =
-    JSON.parse(
-      response.getContentText()
-    );
-
-
-  if (!data.ok) {
-
-    throw new Error(
-      'Telegram API вернул ошибку: ' +
-      response.getContentText()
-    );
-
-  }
-
-
-  if (
-    !data.result ||
-    data.result.length === 0
-  ) {
-
-    throw new Error(
-      'Бот не получил /start. ' +
-      'Открой @CoffeeMachineDiagnostBot, ' +
-      'отправь /start и запусти setupAdmin ещё раз.'
-    );
-
-  }
+}
 
 
-  let chatId = null;
+function options(arr,key){
 
+  return (
 
-  for (
-    let i = data.result.length - 1;
-    i >= 0;
-    i--
-  ) {
+    '<div class="options">' +
 
-    const update =
-      data.result[i];
+    arr.map(function(v){
 
+      return (
 
-    if (
-      update.message &&
-      update.message.chat
-    ) {
+        '<button class="option ' +
 
-      chatId =
-        update.message.chat.id;
+        (
+          s[key] === v
+          ? 'selected'
+          : ''
+        ) +
 
-      break;
+        '" data-key="' +
+        esc(key) +
+        '" data-value="' +
+        esc(v) +
+        '">' +
 
-    }
+        esc(v) +
 
-  }
+        '</button>'
 
+      );
 
-  if (!chatId) {
+    }).join('') +
 
-    throw new Error(
-      'Telegram Chat ID не найден'
-    );
-
-  }
-
-
-  PropertiesService
-    .getScriptProperties()
-    .setProperty(
-      'ADMIN_CHAT_ID',
-      String(chatId)
-    );
-
-
-  UrlFetchApp.fetch(
-
-    'https://api.telegram.org/bot' +
-    BOT_TOKEN +
-    '/sendMessage',
-
-    {
-
-      method: 'post',
-
-      contentType: 'application/json',
-
-      payload: JSON.stringify({
-
-        chat_id: chatId,
-
-        text:
-          '✅ Заявки подключены!\n\n' +
-          'Теперь заявки из диагностики ' +
-          'кофемашины будут автоматически ' +
-          'приходить сюда.'
-
-      })
-
-    }
+    '</div>'
 
   );
 
 }
+
+
+function nav(nextDisabled=false,back=true){
+
+  return (
+
+    '<div class="actions">' +
+
+    (
+      back
+      ?
+      '<button class="btn back" id="back">← Назад</button>'
+      :
+      ''
+    ) +
+
+    '<button class="btn next" id="next" ' +
+
+    (
+      nextDisabled
+      ?
+      'disabled'
+      :
+      ''
+    ) +
+
+    '>Далее →</button>' +
+
+    '</div>'
+
+  );
+
+}
+
+
+/* =========================
+   СОБЫТИЯ
+========================= */
+
+function bind(){
+
+  document
+    .querySelectorAll('.option')
+    .forEach(function(b){
+
+      b.onclick = function(){
+
+        s[b.dataset.key] =
+          b.dataset.value;
+
+        render();
+
+      };
+
+    });
+
+
+  const n =
+    document.getElementById('next');
+
+  if(n){
+    n.onclick = next;
+  }
+
+
+  const b =
+    document.getElementById('back');
+
+  if(b){
+
+    b.onclick = function(){
+
+      step =
+        Math.max(1,step-1);
+
+      render();
+
+    };
+
+  }
+
+}
+
+
+/* =========================
+   ROUTER
+========================= */
+
+function render(){
+
+  if(step === 1)
+    return clientType();
+
+  if(step === 2)
+    return s.clientType === 'company'
+      ? companyEquipment()
+      : individualBrand();
+
+  if(step === 3)
+    return s.clientType === 'company'
+      ? companyCounts()
+      : individualModel();
+
+  if(step === 4)
+    return s.clientType === 'company'
+      ? companyService()
+      : individualSymptom();
+
+  if(step === 5)
+    return s.clientType === 'company'
+      ? companyContact()
+      : individualTiming();
+
+  if(step === 6)
+    return s.clientType === 'company'
+      ? companyComment()
+      : individualDetail();
+
+  if(step === 7)
+    return s.clientType === 'company'
+      ? companyReview()
+      : individualExtra();
+
+  if(step === 8)
+    return s.clientType === 'company'
+      ? companyReview()
+      : individualReview();
+
+  if(step === 9)
+    return sendStep();
+
+}
+
+
+/* =========================
+   ШАГ 1
+========================= */
+
+function clientType(){
+
+  shell(
+
+    'ШАГ 1',
+
+    'Кто обращается?',
+
+    'Выберите вариант, чтобы мы задали только нужные вопросы.',
+
+    options(
+
+      [
+        '👤 Частное лицо',
+        '🏢 Компания / офис'
+      ],
+
+      'clientType'
+
+    ),
+
+    nav(!s.clientType,false)
+
+  );
+
+  bind();
+
+}
+
+
+/* =========================
+   ЧАСТНОЕ ЛИЦО
+========================= */
+
+function individualBrand(){
+
+  shell(
+
+    'ЧАСТНОЕ ЛИЦО',
+
+    'Марка кофемашины',
+
+    'Если вашей марки нет в списке, выберите «Другая марка».',
+
+    options(brands,'brand'),
+
+    nav(!s.brand)
+
+  );
+
+  bind();
+
+}
+
+
+function individualModel(){
+
+  shell(
+
+    'ЧАСТНОЕ ЛИЦО',
+
+    'Модель кофемашины',
+
+    'Например: Jura E8, BORK C807, DeLonghi ECAM 350.55.',
+
+    '<div class="field">' +
+
+      '<label>Модель</label>' +
+
+      '<input id="model" ' +
+      'value="' + esc(s.model) + '"' +
+      ' placeholder="Введите модель">' +
+
+    '</div>' +
+
+    nav(!s.model.trim())
+
+  );
+
+  document
+    .getElementById('model')
+    .oninput = function(e){
+
+      s.model =
+        e.target.value;
+
+      document
+        .getElementById('next')
+        .disabled =
+          !s.model.trim();
+
+    };
+
+  bind();
+
+}
+
+
+function individualSymptom(){
+
+  shell(
+
+    'ЧАСТНОЕ ЛИЦО',
+
+    'Что происходит с кофемашиной?',
+
+    'Выберите основной симптом.',
+
+    options(
+      individualSymptoms,
+      'symptom'
+    ),
+
+    nav(!s.symptom)
+
+  );
+
+  bind();
+
+}
+
+
+function individualTiming(){
+
+  const arr =
+    s.symptom === 'Ошибка на дисплее'
+    ? errorTimings
+    : timings;
+
+  shell(
+
+    'ЧАСТНОЕ ЛИЦО',
+
+    'Когда это происходит?',
+
+    'Это поможет сузить причину неисправности.',
+
+    options(arr,'timing'),
+
+    nav(!s.timing)
+
+  );
+
+  bind();
+
+}
+
+
+function individualDetail(){
+
+  let arr;
+
+  if(
+    s.symptom ===
+    '🥛 Не делает молочную пену'
+  ){
+
+    arr = milkDetails;
+
+  }
+  else if(
+    s.symptom ===
+    'Ошибка на дисплее'
+  ){
+
+    arr = [
+
+      'Ошибка появляется перед этим событием',
+      'Что происходит непосредственно перед ошибкой',
+      'Другое'
+
+    ];
+
+  }
+  else{
+
+    arr = genericDetails;
+
+  }
+
+
+  shell(
+
+    'ЧАСТНОЕ ЛИЦО',
+
+    'Уточните симптомы',
+
+    'Выберите наиболее подходящее описание.',
+
+    options(arr,'detail'),
+
+    nav(!s.detail)
+
+  );
+
+  bind();
+
+}
+
+
+function individualExtra(){
+
+  if(
+    s.symptom ===
+    'Ошибка на дисплее'
+  ){
+
+    shell(
+
+      'ЧАСТНОЕ ЛИЦО',
+
+      'Код ошибки',
+
+      'Введите код так, как он отображается на экране.',
+
+      '<div class="field">' +
+
+        '<label>Код ошибки</label>' +
+
+        '<input id="error" ' +
+        'value="' + esc(s.error) + '"' +
+        ' placeholder="Например: ER15 или 8">' +
+
+      '</div>' +
+
+      '<div class="field">' +
+
+        '<label>Что происходит непосредственно перед ошибкой?</label>' +
+
+        '<textarea id="before" ' +
+        'placeholder="Опишите своими словами">' +
+
+        esc(s.errorBefore) +
+
+        '</textarea>' +
+
+      '</div>' +
+
+      nav(false)
+
+    );
+
+
+    document
+      .getElementById('error')
+      .oninput = function(e){
+
+        s.error =
+          e.target.value;
+
+      };
+
+
+    document
+      .getElementById('before')
+      .oninput = function(e){
+
+        s.errorBefore =
+          e.target.value;
+
+      };
+
+
+    bind();
+
+    return;
+
+  }
+
+
+  shell(
+
+    'ЧАСТНОЕ ЛИЦО',
+
+    'Что уже пробовали?',
+
+    'Можно оставить поле пустым.',
+
+    '<div class="field">' +
+
+      '<label>Ваш комментарий</label>' +
+
+      '<textarea id="tried" ' +
+      'placeholder="Например: промыл систему, перезапустил, очистил заварочный блок...">' +
+
+      esc(s.tried) +
+
+      '</textarea>' +
+
+    '</div>' +
+
+    nav(false)
+
+  );
+
+
+  document
+    .getElementById('tried')
+    .oninput = function(e){
+
+      s.tried =
+        e.target.value;
+
+    };
+
+
+  bind();
+
+}
+
+
+function individualReview(){
+
+  const before =
+    s.errorBefore
+    ?
+    '\nПеред ошибкой: ' +
+    s.errorBefore
+    :
+    '';
+
+
+  const text =
+
+    'Клиент: ' +
+    (
+      tgUser.first_name ||
+      'Telegram-пользователь'
+    ) +
+
+    '\nМарка: ' +
+    s.brand +
+
+    '\nМодель: ' +
+    s.model +
+
+    '\nСимптом: ' +
+    s.symptom +
+
+    '\nКогда возникает: ' +
+    s.timing +
+
+    '\nУточнение: ' +
+    s.detail +
+
+    '\nКод ошибки: ' +
+    (
+      s.error ||
+      'Нет / не указан'
+    ) +
+
+    before +
+
+    '\nЧто уже пробовали: ' +
+    (
+      s.tried ||
+      'Не указано'
+    );
+
+
+  shell(
+
+    'ПРОВЕРКА',
+
+    'Проверьте заявку',
+
+    'Если всё верно, отправьте её Егору.',
+
+    '<div class="summary">' +
+      esc(text) +
+    '</div>' +
+
+    nav(false)
+
+  );
+
+  bind();
+
+}
+
+
+/* =========================
+   КОМПАНИЯ
+========================= */
+
+function companyEquipment(){
+
+  shell(
+
+    'КОМПАНИЯ',
+
+    'Что нужно обслуживать?',
+
+    'Можно выбрать несколько вариантов.',
+
+    '<div class="options">' +
+
+    equipmentChoices
+      .map(function(v,i){
+
+        return (
+
+          '<button class="option ' +
+
+          (
+            s.equipment.includes(v)
+            ? 'selected'
+            : ''
+          ) +
+
+          '" data-eq="' +
+          i +
+          '">' +
+
+          esc(v) +
+
+          '</button>'
+
+        );
+
+      })
+      .join('') +
+
+    '</div>' +
+
+    nav(!s.equipment.length)
+
+  );
+
+
+  document
+    .querySelectorAll('[data-eq]')
+    .forEach(function(b){
+
+      b.onclick = function(){
+
+        const v =
+          equipmentChoices[
+            Number(b.dataset.eq)
+          ];
+
+
+        if(
+          s.equipment.includes(v)
+        ){
+
+          s.equipment =
+            s.equipment.filter(
+              function(x){
+                return x !== v;
+              }
+            );
+
+        }
+        else{
+
+          s.equipment.push(v);
+
+        }
+
+        render();
+
+      };
+
+    });
+
+
+  bind();
+
+}
+
+
+function companyCounts(){
+
+  shell(
+
+    'КОМПАНИЯ',
+
+    'Сколько оборудования?',
+
+    'Укажите количество. Если чего-то нет — укажите 0.',
+
+    '<div class="field">' +
+
+      '<label>Кофемаш
