@@ -2,167 +2,234 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Диагностика кофемашины</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Диагностика кофемашин</title>
 
 <style>
-* {
-  box-sizing: border-box;
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:#3C2F2F;
+  color:#fff;
+  font-family:Arial,sans-serif;
+  min-height:100vh;
 }
 
-body {
-  margin: 0;
-  background: #3C2F2F;
-  color: white;
-  font-family: Arial, sans-serif;
+.app{
+  max-width:520px;
+  margin:auto;
+  padding:22px 16px 35px;
 }
 
-.container {
-  max-width: 600px;
-  margin: auto;
-  padding: 20px 16px 40px;
+.logo{
+  text-align:center;
+  font-size:28px;
+  font-weight:700;
+  margin:8px 0 6px;
 }
 
-.header {
-  text-align: center;
-  margin-bottom: 20px;
+.subtitle{
+  text-align:center;
+  color:#cfc7c5;
+  font-size:15px;
+  margin-bottom:25px;
 }
 
-.logo {
-  font-size: 42px;
+.step{
+  display:none;
 }
 
-h1 {
-  font-size: 24px;
-  margin: 8px 0;
+.step.active{
+  display:block;
 }
 
-.subtitle {
-  color: #d5caca;
-  font-size: 14px;
-  line-height: 1.5;
+h2{
+  font-size:24px;
+  line-height:1.2;
+  margin:10px 0 18px;
 }
 
-.progress {
-  height: 6px;
-  background: #594949;
-  border-radius: 10px;
-  overflow: hidden;
-  margin: 20px 0 30px;
+p{
+  color:#d8d0ce;
+  line-height:1.45;
 }
 
-.progress-bar {
-  height: 100%;
-  width: 14%;
-  background: #FF5722;
+.option{
+  width:100%;
+  padding:17px 16px;
+  margin:9px 0;
+  border:2px solid #665554;
+  border-radius:13px;
+  background:#493938;
+  color:#fff;
+  font-size:17px;
+  text-align:left;
+  cursor:pointer;
+  transition:.15s;
 }
 
-.step {
-  display: none;
+.option.selected{
+  background:#FF5722;
+  border-color:#FF5722;
 }
 
-.step.active {
-  display: block;
+.option:active{
+  transform:scale(.98);
 }
 
-.question {
-  font-size: 20px;
-  font-weight: bold;
-  line-height: 1.35;
-  margin-bottom: 18px;
+input,textarea{
+  width:100%;
+  background:#493938;
+  color:#fff;
+  border:2px solid #665554;
+  border-radius:13px;
+  padding:16px;
+  font-size:17px;
+  outline:none;
+  margin-bottom:12px;
 }
 
-.option {
-  background: #4a3939;
-  border: 2px solid transparent;
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 10px;
-  font-size: 16px;
+input:focus,textarea:focus{
+  border-color:#FF5722;
 }
 
-.option.selected {
-  border-color: #FF5722;
-  background: #5a4039;
+textarea{
+  min-height:130px;
+  resize:vertical;
 }
 
-button {
-  width: 100%;
-  padding: 16px;
-  border: none;
-  border-radius: 12px;
-  margin-top: 10px;
-  background: #FF5722;
-  color: white;
-  font-size: 17px;
-  font-weight: bold;
+.btn{
+  width:100%;
+  padding:17px;
+  border:0;
+  border-radius:13px;
+  background:#666;
+  color:#aaa;
+  font-size:18px;
+  font-weight:700;
+  margin-top:12px;
 }
 
-button:disabled {
-  background: #665552;
-  color: #aaa;
+.btn.ready{
+  background:#FF5722;
+  color:#fff;
+  cursor:pointer;
 }
 
-.back {
-  background: #594949;
+.back{
+  background:transparent;
+  color:#aaa;
+  border:0;
+  font-size:16px;
+  padding:12px 0;
 }
 
-input,
-textarea {
-  width: 100%;
-  padding: 16px;
-  border-radius: 12px;
-  border: 2px solid #594949;
-  background: #302424;
-  color: white;
-  font-size: 16px;
-  outline: none;
+.progress{
+  height:5px;
+  background:#554544;
+  border-radius:10px;
+  margin:0 0 25px;
+  overflow:hidden;
 }
 
-textarea {
-  min-height: 130px;
+.progress div{
+  height:100%;
+  width:14%;
+  background:#FF5722;
+  transition:.2s;
 }
 
-.card {
-  background: #4a3939;
-  border-radius: 12px;
-  padding: 18px;
-  line-height: 1.6;
+.review{
+  background:#493938;
+  border-radius:15px;
+  padding:18px;
+  line-height:1.55;
+  white-space:pre-line;
 }
 
-.success {
-  text-align: center;
-  padding-top: 30px;
+.success{
+  text-align:center;
+  padding-top:35px;
 }
 
-.success-icon {
-  font-size: 60px;
+.success-icon{
+  font-size:64px;
+  margin-bottom:15px;
+}
+
+.small{
+  font-size:13px;
+  color:#aaa;
+  text-align:center;
+  margin-top:20px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="app">
 
-  <div class="header">
-    <div class="logo">☕🔧</div>
-    <h1>Диагностика кофемашины</h1>
-    <div class="subtitle">
-      Ответьте на несколько вопросов, чтобы описать проблему.
-    </div>
-  </div>
+<div class="logo">🔧 Диагностика кофемашины</div>
+<div class="subtitle">Поможем определить вероятную причину неисправности</div>
 
-  <div class="progress">
-    <div class="progress-bar" id="progress"></div>
-  </div>
+<div class="progress"><div id="progress"></div></div>
 
+<!-- 1 -->
+<div class="step active" id="step1">
+<h2>Что происходит с кофемашиной?</h2>
 
-  <!-- 1 -->
+<button class="option" onclick="selectSymptom(this,'Не включается')">🔌 Не включается</button>
+<button class="option" onclick="selectSymptom(this,'Не делает кофе')">☕ Не делает кофе</button>
+<button class="option" onclick="selectSymptom(this,'Не мелет кофе')">⚙️ Не мелет кофе</button>
+<button class="option" onclick="selectSymptom(this,'Кофе течёт не туда')">💧 Кофе течёт не туда</button>
+<button class="option" onclick="selectSymptom(this,'Не нагревает воду')">🔥 Не нагревает воду</button>
+<button class="option" onclick="selectSymptom(this,'Не делает молочную пену')">🥛 Не делает молочную пену</button>
+<button class="option" onclick="selectSymptom(this,'Течёт вода')">💦 Течёт вода</button>
+<button class="option" onclick="selectSymptom(this,'Появляется ошибка')">⚠️ Появляется ошибка</button>
+<button class="option" onclick="selectSymptom(this,'Другая проблема')">🔍 Другая проблема</button>
 
-  <div class="step active" id="step1">
+<button class="btn" id="next1" onclick="goStep2()">Далее</button>
+</div>
 
-    <div class="question">
-      Что происходит с кофемашиной?
-    </div
+<!-- 2 -->
+<div class="step" id="step2">
+<h2>Марка кофемашины</h2>
+
+<button class="option" onclick="selectBrand(this,'Jura')">Jura</button>
+<button class="option" onclick="selectBrand(this,'BORK')">BORK</button>
+<button class="option" onclick="selectBrand(this,'DeLonghi')">DeLonghi</button>
+<button class="option" onclick="selectBrand(this,'Saeco')">Saeco</button>
+<button class="option" onclick="selectBrand(this,'Philips')">Philips</button>
+<button class="option" onclick="selectBrand(this,'Bosch')">Bosch</button>
+<button class="option" onclick="selectBrand(this,'Siemens')">Siemens</button>
+<button class="option" onclick="selectBrand(this,'WMF')">WMF</button>
+<button class="option" onclick="selectBrand(this,'Другая')">Другая марка</button>
+
+<button class="back" onclick="showStep(1)">← Назад</button>
+<button class="btn" id="next2" onclick="goStep3()">Далее</button>
+</div>
+
+<!-- 3 -->
+<div class="step" id="step3">
+<h2>Какая модель?</h2>
+
+<input id="model" placeholder="Например: Jura E8">
+
+<button class="back" onclick="showStep(2)">← Назад</button>
+<button class="btn" onclick="goStep4()">Далее</button>
+</div>
+
+<!-- 4 -->
+<div class="step" id="step4">
+<h2>Когда возникает проблема?</h2>
+
+<button class="option" onclick="selectTiming(this,'Сразу после включения')">Сразу после включения</button>
+<button class="option" onclick="selectTiming(this,'При приготовлении кофе')">При приготовлении кофе</button>
+<button class="option" onclick="selectTiming(this,'При помоле')">При помоле</button>
+<button class="option" onclick="selectTiming(this,'При нагреве')">При нагреве</button>
+<button class="option" onclick="selectTiming(this,'При приготовлении молочного напитка')">При приготовлении молочного напитка</button>
+<button class="option" onclick="selectTiming(this,'После приготовления')">После приготовления</button>
+<button class="option" onclick="selectTiming(this,'Периодически')">Периодически</button>
+<button class="option" onclick="selectTiming(this,'Постоянно
