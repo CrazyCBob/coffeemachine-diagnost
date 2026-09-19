@@ -1130,4 +1130,368 @@ function companyCounts(){
 
     '<div class="field">' +
 
-      '<label>Кофемаш
+      '<label>Кофемашин</label>' +
+
+      '<input id="cm" type="number" min="0" inputmode="numeric" ' +
+      'value="' + esc(s.coffeeMachines) + '"' +
+      'placeholder="Например, 5">' +
+
+    '</div>' +
+
+    '<div class="field">' +
+
+      '<label>Пурифайеров / кулеров</label>' +
+
+      '<input id="wa" type="number" min="0" inputmode="numeric" ' +
+      'value="' + esc(s.waterEquipment) + '"' +
+      'placeholder="Например, 2">' +
+
+    '</div>' +
+
+    '<div class="field">' +
+
+      '<label>Электрических чайников</label>' +
+
+      '<input id="ke" type="number" min="0" inputmode="numeric" ' +
+      'value="' + esc(s.kettles) + '"' +
+      'placeholder="Например, 3">' +
+
+    '</div>' +
+
+    nav(false)
+
+  );
+
+
+  [
+    'cm',
+    'wa',
+    'ke'
+  ]
+  .forEach(function(id){
+
+    document
+      .getElementById(id)
+      .oninput = function(){
+
+        s.coffeeMachines =
+          document.getElementById('cm').value;
+
+        s.waterEquipment =
+          document.getElementById('wa').value;
+
+        s.kettles =
+          document.getElementById('ke').value;
+
+      };
+
+  });
+
+
+  bind();
+
+}
+
+
+function companyService(){
+
+  shell(
+
+    'КОМПАНИЯ',
+
+    'Как сейчас обслуживаете оборудование?',
+
+    'Выберите наиболее близкий вариант.',
+
+    options(
+
+      [
+        'Регулярно, есть свой мастер',
+        'Периодически вызываем мастера',
+        'Только когда что-то ломается',
+        'Практически не обслуживаем',
+        'Не знаю'
+      ],
+
+      'currentService'
+
+    ),
+
+    nav(!s.currentService)
+
+  );
+
+  bind();
+
+}
+
+
+function companyContact(){
+
+  shell(
+
+    'КОМПАНИЯ',
+
+    'Что вам требуется?',
+
+    'Выберите основной формат обслуживания.',
+
+    options(
+
+      [
+        'Разовое обслуживание',
+        'Регулярное ежемесячное обслуживание',
+        'Ремонт неисправной кофемашины',
+        'Полное обслуживание оборудования офиса'
+      ],
+
+      'serviceNeed'
+
+    ),
+
+    nav(!s.serviceNeed)
+
+  );
+
+  bind();
+
+}
+
+
+function companyComment(){
+
+  shell(
+
+    'КОМПАНИЯ',
+
+    'Контакты и адрес',
+
+    'Эти данные нужны, чтобы связаться с вами и оценить выезд.',
+
+    '<div class="field">' +
+
+      '<label>Контактное лицо</label>' +
+
+      '<input id="name" value="' +
+      esc(s.contactName) +
+      '" placeholder="Имя">' +
+
+    '</div>' +
+
+    '<div class="field">' +
+
+      '<label>Телефон</label>' +
+
+      '<input id="phone" type="tel" inputmode="tel" ' +
+      'value="' +
+      esc(s.phone) +
+      '" placeholder="+7 ...">' +
+
+    '</div>' +
+
+    '<div class="field">' +
+
+      '<label>Адрес офиса</label>' +
+
+      '<input id="address" value="' +
+      esc(s.address) +
+      '" placeholder="Город, улица, дом, офис">' +
+
+    '</div>' +
+
+    '<div class="field">' +
+
+      '<label>Дополнительная информация</label>' +
+
+      '<textarea id="comment" placeholder="Например: хотим ежемесячный приезд мастера...">' +
+
+      esc(s.comment) +
+
+      '</textarea>' +
+
+    '</div>' +
+
+    nav(false)
+
+  );
+
+
+  [
+    'name',
+    'phone',
+    'address',
+    'comment'
+  ]
+  .forEach(function(id){
+
+    document
+      .getElementById(id)
+      .oninput = function(){
+
+        s.contactName =
+          document.getElementById('name').value;
+
+        s.phone =
+          document.getElementById('phone').value;
+
+        s.address =
+          document.getElementById('address').value;
+
+        s.comment =
+          document.getElementById('comment').value;
+
+      };
+
+  });
+
+
+  bind();
+
+}
+
+
+function companyReview(){
+
+  const text =
+
+    'Тип: Компания / офис' +
+
+    '\nОборудование: ' +
+    s.equipment.join(', ') +
+
+    '\nКофемашин: ' +
+    (s.coffeeMachines || '0') +
+
+    '\nПурифайеров / кулеров: ' +
+    (s.waterEquipment || '0') +
+
+    '\nЧайников: ' +
+    (s.kettles || '0') +
+
+    '\nТекущее обслуживание: ' +
+    s.currentService +
+
+    '\nТребуется: ' +
+    s.serviceNeed +
+
+    '\nКонтакт: ' +
+    s.contactName +
+
+    '\nТелефон: ' +
+    s.phone +
+
+    '\nАдрес: ' +
+    s.address +
+
+    '\nКомментарий: ' +
+    (s.comment || 'Нет');
+
+
+  shell(
+
+    'ПРОВЕРКА',
+
+    'Проверьте заявку на обслуживание',
+
+    'После отправки заявка сразу поступит Егору в Telegram.',
+
+    '<div class="summary">' +
+      esc(text) +
+    '</div>' +
+
+    nav(false)
+
+  );
+
+  bind();
+
+}
+
+
+/* =========================
+   УСПЕШНАЯ ОТПРАВКА
+========================= */
+
+function sendStep(){
+
+  shell(
+
+    'ГОТОВО',
+
+    'Заявка отправлена',
+
+    'Егор получил её в Telegram и сможет связаться с вами.',
+
+    '<div class="success">' +
+
+      '<div class="icon">✅</div>' +
+
+      '<p>Спасибо! Заявка принята.</p>' +
+
+      '<p class="small">' +
+
+      'Если вы указали телефон или Telegram, ' +
+      'Егор сможет связаться с вами для уточнения деталей.' +
+
+      '</p>' +
+
+    '</div>'
+
+  );
+
+}
+
+
+/* =========================
+   ОТПРАВКА
+========================= */
+
+async function send(){
+
+  if(window._sending)
+    return;
+
+  window._sending = true;
+
+
+  const u =
+    userContact();
+
+
+  const payload =
+    Object.assign(
+
+      {
+        type:'diagnostic_request'
+      },
+
+      s,
+
+      u,
+
+      {
+        telegramInitData:
+          tg && tg.initData
+          ? tg.initData
+          : ''
+      }
+
+    );
+
+
+  try{
+
+    await fetch(
+
+      BACKEND_URL,
+
+      {
+
+        method:'POST',
+
+        mode:'no-cors',
+
+        headers:{
+          'Content-Type':
+          'text/plain;charset=utf-8'
+ 
