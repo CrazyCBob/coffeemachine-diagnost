@@ -369,10 +369,7 @@ function getTelegramData(){
 
 async function send(){
   if(sending)return;
-  if(!tg || !tg.initData){
-    alert('Откройте диагностику через Telegram-бота @CoffeeMachineDiagnostBot и отправьте заявку оттуда.');
-    return;
-  }
+  
   sending=true;
   const t=getTelegramData();
   const payload={
