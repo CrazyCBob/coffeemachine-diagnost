@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Кофемашины наизнанку — заявка</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{--bg:#3C2F2F;--card:#4A3A38;--card2:#5A4643;--accent:#FF5722;--text:#fff;--muted:#D4C9C7;--dark:#332727;--ok:#35B96B}
+*{box-sizing:border-box}
+body{margin:0;padding:16px;background:var(--bg);color:var(--text);font-family:Arial,sans-serif}
+.wrap{max-width:620px;margin:auto}
+.brand{font-size:13px;color:var(--muted);margin:3px 0 7px}
+h1{font-size:25px;margin:0 0 8px}
+.sub{color:var(--muted);font-size:14px;line-height:1.45;margin-bottom:18px}
+.step{display:none} .step.active{display:block}
+.card{background:var(--card);border-radius:18px;padding:18px;box-shadow:0 8px 25px rgba(0,0,0,.18)}
+.question{font-size:20px;font-weight:700;margin-bottom:15px;line-height:1.25}
+.option{width:100%;border:1px solid rgba(255,255,255,.12);background:var(--card2);color:#fff;border-radius:13px;padding:14px;margin:7px 0;text-align:left;font-size:16px}
+.option.selected{background:var(--accent);border-color:var(--accent)}
+.btn{width:100%;border:0;border-radius:14px;padding:15px;margin-top:14px;background:var(--accent);color:#fff;font-size:17px;font-weight:700}
+.btn.secondary{background:#6A5551}
+input,textarea{width:100%;border:0;outline:0;border-radius:13px;padding:14px;margin:6px 0;background:#F4EEEE;color:#241D1D;font-size:16px}
+textarea{min-height:95px;resize:vertical}
+.label{display:block;font-size:13px;color:var(--muted);margin:9px 2px 2px}
+.hint{color:var(--muted);font-size:13px;line-height:1.4;margin-top:8px}
+.checks{display:grid;gap:8px}
+.check{display:flex;align-items:center;gap:10px;background:var(--card2);border-radius:12px;padding:13px;font-size:16px}
+.check input{width:auto;margin:0}
+.review{white-space:pre-wrap;background:var(--dark);border-radius:13px;padding:14px;line-height:1.48;font-size:14px}
+.success{text-align:center;padding:30px 10px}
+.success h2{font-size:25px;margin:0 0 10px}
+.small{font-size:12px;color:var(--muted)}
+.badge{display:inline-block;padding:5px 9px;border-radius:20px;background:rgba(255,87,34,.18);color:#fff;font-size:12px;margin-bottom:10px}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">☕ КОФЕМАШИНЫ НАИЗНАНКУ</div>
+  <h1>🔧 Заявка по кофемашине</h1>
+  <div class="sub">Опишите проблему или оставьте заявку на обслуживание офиса. Я получу данные и свяжусь с вами.</div>
+
+  <section class="step active" id="step1">
+    <div class="card">
+      <div class="question">Кто обращается?</div>
+      <button class="option" onclick="choose('clientType','private',this)">👤 Частное лицо</button>
+      <button class="option" onclick="choose('clientType','company',this)">🏢 Компания / офис</button>
+      <button class="btn" onclick="next()">Далее</button>
+    </div>
+  </section>
+
+  <section class="step" id="step2p">
+    <div class="card">
+      <div class="question">Марка кофемашины</div>
+      <button class="option" onclick="choose('brand','Jura',this)">Jura</button>
+      <button class="option" onclick="choose('brand','BORK',this)">BORK</button>
+      <button class="option" onclick="choose('brand','DeLonghi',this)">DeLonghi</button>
+      <button class="option" onclick="choose('brand','Philips / Saeco',this)">Philips / Saeco</button>
+      <button class="option" onclick="choose('brand','WMF',this)">WMF</button>
+      <button class="option" onclick="choose('brand','Другая',this)">Другая</button>
+      <button class="btn" onclick="next()">Далее</button>
+    </div>
+  </section>
+
+  <section class="step" id="step3p">
+    <div class="card">
+      <div class="question">Модель</div>
+      <input id="model" placeholder="Например: Jura E8">
+      <button class="btn" onclick="next()">Далее</button>
+    </div>
+  </section>
+
+  <section class="step" id="step4p">
+    <div class="card">
+      <div class="question">Что происходит?</div>
+      <button class="option" onclick="choose('symptom','Не делает кофе',this)">☕ Не делает кофе</button>
+      <button class="option" onclick="choose('symptom','Не делает молочную пену',this)">🥛 Не делает молочную пену</button>
+      <button class="option" onclick="choose('symptom','Не греет воду / кофе холодный',this)">🌡️ Не греет воду / кофе холодный</button>
+      <button class="option" onclick="choose('symptom','Кофемашина протекает',this)">💧 Кофемашина протекает</button>
+      <button class="option" onclick="choose('symptom','Не работает кофемолка',this)">⚙️ Не работает кофемолка</button>
+      <button class="option" onclick="choose('symptom','Показывает ошибку',this)">⚠️ Показывает ошибку</button>
+      <button class="option" onclick="choose('symptom','Другая проблема',this)">Другая проблема</button>
+      <button class="btn" onclick="next()">Далее</button>
+    </div>
+  </section>
+
+  <section class="step" id="step5p">
+    <div class="card">
+      <div class="question">Когда возникает проблема?</div>
+      <button class="option" onclick="choose('timing','Сразу после включения',this)">Сразу после включения</button>
+      <button class="option" onclick="choose('timing','При приготовлении кофе',this)">При приготовлении кофе</button>
+      <button class="option" onclick="choose('timing','При помоле',this)">При помоле</button>
+      <button class="option" onclick="choose('timing','При нагреве',this)">При нагреве</button>
+      <button class="option" onclick="choose('timing','При приготовлении молочного напитка',this)">При приготовлении молочного напитка</button>
+      <button class="option" onclick="choose('timing','После приготовления',this)">После приготовления</button>
+      <button class="option" onclick="choose('timing','Периодически',this)">Периодически</button>
+      <button class="option" onclick="choose('timing','Постоянно',this)">Постоянно</button>
+      <button class="btn" onclick="next()">Далее</button>
+    </div>
+  </section>
+
+  <section class="step" id="step6p">
+    <div class="card">
+      <div class="question">Уточним симптом</div>
+      <div id="detailOptions"></div>
+      <div id="errorCodeWrap" class="hidden">
+        <label class="label">Код ошибки — если отображается</label>
+        <input id="errorCode" placeholder="Например: ER 15">
+      </div>
+      <textarea id="detailText" placeholder="Если нужно — опишите подробнее"></textarea>
+      <button class="btn" onclick="next()">Далее</button>
+    </div>
+  </section>
+
+  <section class="step" id="step7p">
+    <div class="card">
+      <div class="question">Что уже пробовали?</div>
+      <textarea id="tried" placeholder="Например: промыл молочную систему, сделал декальцинацию, перезагрузил..."></textarea>
+      <label class="label">Телефон для связи — по желанию</label>
+      <input id="privatePhone" type="tel" placeholder="+7 ...">
+      <button class="btn" onclick="next()">Посмотреть заявку</button>
+    </div>
+  </section>
+
+  <section class="step" id="step2c">
+    <div class="card">
+      <div class="question">Какое оборудование нужно обслуживать?</div>
+      <div class="checks">
+        <label class="check"><input type="checkbox" value="Кофемашины" onchange="toggleEquipment(this)"> ☕ Кофемашины</label>
+        <label class="check"><input type="checkbox" value="Пурифайеры / кулеры" onchange="toggleEquipment(this)"> 💧 Пурифайеры / кулеры</label>
+        <label class="check"><input type="checkbox" value="Электрические чайники" onchange="toggleEquipment(this)"> 🫖 Электрические чайники</label>
+      </div>
+      <button class="btn" onclick="next()">Далее</button>
+    </div>
+  </section>
+
+  <section class="step" id="step3c">
+    <div class="card">
+      <div class="question">Сколько оборудования?</div>
+      <label class="label">Кофемашин</label><input id="coffeeMachines" type="number" min="0" inputmode="numeric" placeholder="Например: 5">
+      <label class="label">Пурифайеров / кулеров</label><input id="waterEquipment" type="number" min="0" inputmode="numeric" placeholder="Например: 2">
+      <label class="label">Электрических чайников</label><input id="kettles" type="number" min="0" inputmode="numeric" placeholder="Например: 3">
+      <div class="hint">Если оборудование выбрано выше, укажи его количество. Остальное можно оставить 0.</div>
+      <button class="btn" onclick="next()">Далее</button>
+    </div>
+  </section>
+
+  <section class="step" id="step4c">
+    <div class="card">
+      <div class="question">Как сейчас обслуживают оборудование?</div>
+      <button class="option" onclick="choose('currentService','Есть свой специалист',this)">Есть свой специалист</button>
+      <button class="option" onclick="choose('currentService','Вызываем мастера по необходимости',this)">Вызываем мастера по необходимости</button>
+      <button class="option" onclick="choose('currentService','Обслуживаем сами',this)">Обслуживаем сами</button>
+      <button class="option" onclick="choose('currentService','Регулярного обслуживания нет',this)">Регулярного обслуживания нет</button>
+      <button class="option" onclick="choose('currentService','Другое',this)">Другое</button>
+      <button class="btn" onclick="next()">Далее</button>
+    </div>
+  </section>
+
+  <section class="step" id="step5c">
+    <div class="card">
+      <div class="question">Что требуется?</div>
+      <button class="option" onclick="choose('serviceNeed','Разовое обслуживание',this)">Разовое обслуживание</button>
+      <button class="option" onclick="choose('serviceNeed','Ежемесячное обслуживание',this)">Ежемесячное обслуживание</button>
+      <button class="option" onclick="choose('serviceNeed','Ремонт',this)">Ремонт</button>
+      <button class="option" onclick="choose('serviceNeed','Полное обслуживание оборудования офиса',this)">Полное обслуживание оборудования офиса</button>
+      <button class="btn" onclick="next()">Далее</button>
+    </div>
+  </section>
+
+  <section class="step" id="step6c">
+    <div class="card">
+      <div class="question">Контактные данные</div>
+      <label class="label">Название компании</label>
+      <input id="companyName" placeholder="Например: ООО «Ромашка»">
+      <label class="label">Контактное лицо</label>
+      <input id="contactName" placeholder="Имя">
+      <label class="label">Телефон</label>
+      <input id="phone" type="tel" placeholder="+7 ...">
+      <label class="label">Адрес офиса</label>
+      <input id="address" placeholder="Адрес">
+      <label class="label">Комментарий</label>
+      <textarea id="comment" placeholder="Удобное время, особенности оборудования, несколько офисов и т.д."></textarea>
+      <button class="btn" onclick="next()">Посмотреть заявку</button>
+    </div>
+  </section>
+
+  <section class="step" id="step7review">
+    <div class="card">
+      <div class="badge">ПРОВЕРКА</div>
+      <div class="question">Проверьте заявку</div>
+      <div class="review" id="review"></div>
+      <button class="btn" onclick="send()">📩 Отправить заявку Егору</button>
+      <button class="btn secondary" onclick="back()">← Назад</button>
+    </div>
+  </section>
+
+  <section class="step" id="success">
+    <div class="card success">
+      <h2>✅ Заявка отправлена</h2>
+      <div class="sub">Заявка отправлена. Егор получил данные и свяжется с вами.</div>
+    </div>
+  </section>
+</div>
+
+<script>
+const tg = window.Telegram && window.Telegram.WebApp;
+if(tg){tg.ready();tg.expand();}
+
+const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxfiNTzsCfIgdAg-Hxc6Rk5Wc6tf6JtaaXEIEYnr71w49xFQ6gLM4PFIfACb8kGnzt2/exec';
+
+const s = {
+  clientType:'', brand:'', model:'', symptom:'', timing:'', detail:'', errorCode:'', tried:'',
+  privatePhone:'',
+  equipment:[], coffeeMachines:'0', waterEquipment:'0', kettles:'0',
+  currentService:'', serviceNeed:'', companyName:'', contactName:'',
+  phone:'', address:'', comment:''
+};
+
+let step=1, sending=false;
+
+function show(id){
+  document.querySelectorAll('.step').forEach(x=>x.classList.remove('active'));
+  const el=document.getElementById(id);
+  if(el) el.classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function choose(key,value,el){
+  s[key]=value;
+  const parent=el && el.parentElement;
+  if(parent) parent.querySelectorAll('.option').forEach(x=>x.classList.remove('selected'));
+  if(el) el.classList.add('selected');
+  if(key==='symptom') { buildDetails(); updateErrorCodeField(); }
+}
+
+function toggleEquipment(el){
+  if(el.checked) {
+    if(!s.equipment.includes(el.value)) s.equipment.push(el.value);
+  } else {
+    s.equipment=s.equipment.filter(x=>x!==el.value);
+  }
+}
+
+function buildDetails(){
+  const box=document.getElementById('detailOptions');
+  let arr=[];
+  if(s.symptom==='Не делает молочную пену'){
+    arr=['Молоко вообще не засасывает','Идёт молоко, но без пены','Пена получается слишком жидкой','Пена стала хуже постепенно','То делает пену, то нет','Из молочной системы почти ничего не выходит','Другая проблема'];
+  } else if(s.symptom==='Показывает ошибку'){
+    arr=['Ошибка появляется сразу после включения','Ошибка появляется при приготовлении кофе','Ошибка появляется при помоле','Ошибка появляется при нагреве','Ошибка появляется при приготовлении молочного напитка','Ошибка появляется после приготовления','Ошибка появляется периодически','Ошибка появляется постоянно','Другое'];
+  } else {
+    arr=['Проблема появилась внезапно','Проблема появилась постепенно','Проблема возникает постоянно','Проблема возникает периодически','Другая ситуация'];
+  }
+  box.innerHTML=arr.map(x=>'<button class="option" onclick="chooseDetail(this)">'+escapeHtml(x)+'</button>').join('');
+}
+
+function updateErrorCodeField(){
+  const wrap=document.getElementById('errorCodeWrap');
+  if(wrap) wrap.classList.toggle('hidden',s.symptom!=='Показывает ошибку');
+  if(s.symptom!=='Показывает ошибку') s.errorCode='';
+}
+
+function chooseDetail(el){
+  s.detail=el.textContent;
+  document.querySelectorAll('#detailOptions .option').forEach(x=>x.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function val(id){return document.getElementById(id).value.trim();}
+
+function cleanCount(id){
+  const n=parseInt(document.getElementById(id).value,10);
+  if(!Number.isFinite(n) || n<0)return '0';
+  return String(Math.min(n,999));
+}
+
+function next(){
+  if(step===1){
+    if(!s.clientType)return;
+    step=2; return show(s.clientType==='private'?'step2p':'step2c');
+  }
+
+  if(s.clientType==='private'){
+    if(step===2){if(!s.brand)return;step=3;return show('step3p');}
+    if(step===3){s.model=val('model');if(!s.model)return;step=4;return show('step4p');}
+    if(step===4){if(!s.symptom)return;step=5;return show('step5p');}
+    if(step===5){if(!s.timing)return;step=6;return show('step6p');}
+    if(step===6){s.detail=val('detailText')||s.detail;s.errorCode=val('errorCode');if(!s.detail)return;if(s.symptom==='Показывает ошибку' && !s.errorCode && !s.detail)return;step=7;return show('step7p');}
+    if(step===7){
+      s.tried=val('tried')||'Ничего';
+      s.privatePhone=val('privatePhone');
+      step=8;return renderReview();
+    }
+  }
+
+  if(s.clientType==='company'){
+    if(step===2){if(!s.equipment.length)return;step=3;return show('step3c');}
+    if(step===3){
+      s.coffeeMachines=cleanCount('coffeeMachines');
+      s.waterEquipment=cleanCount('waterEquipment');
+      s.kettles=cleanCount('kettles');
+      const selectedRules=[
+        ['Кофемашины',Number(s.coffeeMachines)],
+        ['Пурифайеры / кулеры',Number(s.waterEquipment)],
+        ['Электрические чайники',Number(s.kettles)]
+      ];
+      if(!selectedRules.some(([name,count])=>s.equipment.includes(name)&&count>0)) return;
+      if(s.equipment.includes('Кофемашины') && Number(s.coffeeMachines)<1)return;
+      if(s.equipment.includes('Пурифайеры / кулеры') && Number(s.waterEquipment)<1)return;
+      if(s.equipment.includes('Электрические чайники') && Number(s.kettles)<1)return;
+      if(!s.equipment.includes('Кофемашины')) s.coffeeMachines='0';
+      if(!s.equipment.includes('Пурифайеры / кулеры')) s.waterEquipment='0';
+      if(!s.equipment.includes('Электрические чайники')) s.kettles='0';
+      step=4;return show('step4c');
+    }
+    if(step===4){if(!s.currentService)return;step=5;return show('step5c');}
+    if(step===5){if(!s.serviceNeed)return;step=6;return show('step6c');}
+    if(step===6){
+      s.companyName=val('companyName');
+      s.contactName=val('contactName');
+      s.phone=val('phone');
+      s.address=val('address');
+      s.comment=val('comment')||'Нет';
+      if(!s.companyName||!s.contactName||!s.phone||!s.address)return;
+      step=7;return renderReview();
+    }
+  }
+}
+
+function renderReview(){
+  let text='';
+  if(s.clientType==='private'){
+    text='👤 Частное лицо\n\n'+
+      '☕ Марка: '+s.brand+'\n'+
+      '📋 Модель: '+s.model+'\n\n'+
+      '⚠️ Симптом: '+s.symptom+'\n'+
+      '🕐 Когда возникает: '+s.timing+'\n'+
+      '🔍 Уточнение: '+s.detail+(s.errorCode?'\n🔢 Код ошибки: '+s.errorCode:'')+'\n\n'+
+      '🛠 Что уже пробовали:\n'+s.tried+
+      (s.privatePhone?'\n\n📞 Телефон: '+s.privatePhone:'');
+  } else {
+    text='🏢 Компания / офис\n\n'+
+      '🏷 Компания: '+s.companyName+'\n'+
+      '👤 Контакт: '+s.contactName+'\n'+
+      '📞 Телефон: '+s.phone+'\n'+
+      '📍 Адрес: '+s.address+'\n\n'+
+      '☕ Кофемашин: '+s.coffeeMachines+'\n'+
+      '💧 Пурифайеров / кулеров: '+s.waterEquipment+'\n'+
+      '🫖 Чайников: '+s.kettles+'\n\n'+
+      '🔧 Как сейчас обслуживают:\n'+s.currentService+'\n\n'+
+      '🎯 Что требуется:\n'+s.serviceNeed+'\n\n'+
+      '💬 Комментарий:\n'+s.comment;
+  }
+  document.getElementById('review').textContent=text;
+  show('step7review');
+}
+
+function getTelegramData(){
+  const u=tg&&tg.initDataUnsafe?tg.initDataUnsafe.user:null;
+  return {
+    telegramName:u?([u.first_name,u.last_name].filter(Boolean).join(' ')):'',
+    telegramUsername:u&&u.username?u.username:'',
+    telegramId:u&&u.id?String(u.id):'',
+    initData:tg&&tg.initData?tg.initData:''
+  };
+}
+
+async function send(){
+  if(sending)return;
+  if(!tg || !tg.initData){
+    alert('Откройте диагностику через Telegram-бота @CoffeeMachineDiagnostBot и отправьте заявку оттуда.');
+    return;
+  }
+  sending=true;
+  const t=getTelegramData();
+  const payload={
+    type:'diagnostic_request',
+    clientType:s.clientType,
+    telegramName:t.telegramName,
+    telegramUsername:t.telegramUsername,
+    telegramId:t.telegramId,
+    initData:t.initData,
+    brand:s.brand,model:s.model,symptom:s.symptom,timing:s.timing,
+    detail:s.detail,errorCode:s.errorCode,tried:s.tried,privatePhone:s.privatePhone,
+    equipment:s.equipment.join(', '),coffeeMachines:s.coffeeMachines,
+    waterEquipment:s.waterEquipment,kettles:s.kettles,
+    currentService:s.currentService,serviceNeed:s.serviceNeed,
+    companyName:s.companyName,contactName:s.contactName,phone:s.phone,
+    address:s.address,comment:s.comment
+  };
+  try{
+    // Apps Script is called cross-origin. no-cors intentionally prevents reading
+    // the response, so we only show success after the request itself is accepted
+    // by the browser. The backend performs all validation and Telegram sending.
+    await fetch(BACKEND_URL,{
+      method:'POST',
+      mode:'no-cors',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify(payload),
+      keepalive:true
+    });
+    show('success');
+  }catch(e){
+    alert('Не удалось отправить заявку. Проверьте интернет и попробуйте ещё раз.');
+  }finally{sending=false;}
+}
+
+function back(){
+  if(s.clientType==='private'){step=7;show('step7p');}
+  else {step=6;show('step6c');}
+}
+
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+}
+</script>
+</body>
+</html>
